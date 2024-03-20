@@ -6,6 +6,7 @@ import ClearConversationsButton from "./sidebar/ClearConversationsButton";
 import HelpButton from "./sidebar/HelpButton";
 import LogoutButton from "./sidebar/LogoutButton";
 
+import { IoMdAdd } from "react-icons/io";
 const Sidebar = ({}) => {
   const [chats, setNewChats] = useState(["Nina discovery"]);
   return (
@@ -17,6 +18,7 @@ const Sidebar = ({}) => {
             "New chat button clicked";
           }}
           otherStyles="w-full"
+          icon={<IoMdAdd />}
         />
         <div className="flex flex-col my-2 space-y-2">
           {/* Nina discovery page */}

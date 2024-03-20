@@ -1,11 +1,16 @@
 "use client";
-import React, { MouseEventHandler } from "react";
+import React, {
+  Component,
+  MouseEventHandler,
+  ReactElement,
+  ReactNode,
+} from "react";
 
 interface AskNinaButtonProps {
   label: string;
   onClick: MouseEventHandler;
   variant?: Variants;
-  icon?: any;
+  icon?: ReactElement;
   otherStyles?: string;
 }
 
@@ -25,9 +30,10 @@ const AskNinaButton = ({
       onClick={onClick}
       className={` ${
         variant == Variants.withBorder ? "border border-primaryPurple" : ""
-      } text-sm text-left rounded-md p-2 ${otherStyles}`}
+      } text-sm text-left rounded-md p-2 inline-flex items-center space-x-2 ${otherStyles}`}
     >
-      {label}
+      {icon && <span>{icon}</span>}
+      <span>{label}</span>
     </button>
   );
 };

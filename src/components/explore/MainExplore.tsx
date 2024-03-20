@@ -1,7 +1,14 @@
+"use client";
 import React from "react";
 import QuestionPill from "./QuestionPill";
 import RegenerateResponseButton from "./RegenerateResponseButton";
 import QuestionQuery from "./QuestionQuery";
+
+import { BsTextParagraph } from "react-icons/bs";
+import { LuPencilLine } from "react-icons/lu";
+import { MdOutlineTranslate } from "react-icons/md";
+import { useRouter } from "next/navigation";
+import EnterQuery from "./EnterQuery";
 
 interface MainExploreProps {}
 
@@ -20,12 +27,21 @@ const MainExplore = ({}: MainExploreProps) => {
     "Tell me more about the penpal program!",
     "Write a rap song",
   ];
+
+  const router = useRouter();
+
+  const handleEnter = () => router.push(`/chat`);
+
   return (
-    <div className="flex flex-col ">
-      <div className="w-full flex flex-row space-x-4">
+    <div className="flex flex-col h-inherit">
+      <div className="w-full flex flex-row space-x-4 flex-1">
         <div className="flex flex-col items-center">
-          {/* TODO: icon here */}
-          <h2 className="font-display">Explain</h2>
+          <div className="flex flex-col items-center justify-start h-20">
+            <span>
+              <BsTextParagraph size={40} />
+            </span>
+            <h2 className="font-display">Explain</h2>
+          </div>
           <div className="flex flex-col space-y-4">
             {exploreQuestions.map((question) => (
               <QuestionPill
@@ -36,8 +52,12 @@ const MainExplore = ({}: MainExploreProps) => {
           </div>
         </div>
         <div className="flex flex-col items-center">
-          {/* TODO: icon here */}
-          <h2 className="font-display">Find resources</h2>
+          <div className="flex flex-col items-center justify-start h-20">
+            <span>
+              <LuPencilLine size={35} />
+            </span>
+            <h2 className="font-display">Find resources</h2>
+          </div>
           <div className="flex flex-col space-y-4">
             {resourceQuestions.map((question) => (
               <QuestionPill
@@ -48,8 +68,12 @@ const MainExplore = ({}: MainExploreProps) => {
           </div>
         </div>
         <div className="flex flex-col items-center">
-          {/* TODO: icon here */}
-          <h2 className="font-display">Connect with others</h2>
+          <div className="flex flex-col items-center justify-start h-20">
+            <span>
+              <MdOutlineTranslate size={35} />
+            </span>
+            <h2 className="font-display">Connect with others</h2>
+          </div>
           <div className="flex flex-col space-y-4">
             {connectQuestions.map((question) => (
               <QuestionPill
@@ -61,15 +85,7 @@ const MainExplore = ({}: MainExploreProps) => {
         </div>
       </div>
 
-      <div className="flex-1 flex flex-col items-center justify-center space-y-2 mt-12">
-        <RegenerateResponseButton />
-        <QuestionQuery />
-
-        <p className="text-xs text-grey-200">
-          Ask Nina AI. Our goal is to connect girls with STEM and
-          entrepreneurial resources. Your feedback will help us improve.
-        </p>
-      </div>
+      <EnterQuery handleEnter={handleEnter} />
     </div>
   );
 };

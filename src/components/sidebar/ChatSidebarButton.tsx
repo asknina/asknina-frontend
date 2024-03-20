@@ -1,6 +1,8 @@
 "use client";
 import React, { MouseEventHandler } from "react";
-
+import { MdOutlineChatBubbleOutline } from "react-icons/md";
+import { FiEdit3 } from "react-icons/fi";
+import { HiOutlineTrash } from "react-icons/hi";
 interface ChatSidebarButtonProps {
   label: string;
   onClick: MouseEventHandler;
@@ -12,14 +14,22 @@ const ChatSidebarButton = ({
   onDelete,
 }: ChatSidebarButtonProps) => {
   return (
-    <div className="flex p-2 text-sm flex-row justify-between bg-white shadow-sm rounded-sm">
-      <div className="space-x-2">
-        <span>Chat</span>
+    <div className="inline-flex p-2 text-sm flex-row justify-between bg-white shadow-sm rounded-sm">
+      <div className="space-x-2 inline-flex items-center">
+        <span>
+          <MdOutlineChatBubbleOutline />
+        </span>
         <span>{label}</span>
       </div>
-      <div className="space-x-2">
-        <span>Edit</span>
-        {onDelete && <span onClick={() => onDelete()}>Trash</span>}
+      <div className="space-x-2 inline-flex items-center">
+        <span>
+          <FiEdit3 />
+        </span>
+        {onDelete && (
+          <span onClick={() => onDelete()}>
+            <HiOutlineTrash />
+          </span>
+        )}
       </div>
     </div>
   );
