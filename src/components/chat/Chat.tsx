@@ -1,100 +1,142 @@
 "use client";
-import React, { useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import AskNinaIcon from "../../../public/logos/antenna-inverted-90x90.png";
 import Image from "next/image";
-import QuestionQuery from "../explore/QuestionQuery";
 import EnterQuery from "../explore/EnterQuery";
+import { QuestionContext } from "@/app/providers";
+import { getMessageResponse } from "@/routes/openai";
+
+import PulseLoader from "react-spinners/PulseLoader";
+
 interface ChatProps {}
 
 interface DialogProps {
-  id: string;
-  user: string;
-  dialog: { __html: TrustedHTML };
+  role: SystemRoles;
+  content: string;
+}
+
+enum SystemRoles {
+  USER = "user",
+  SYSTEM = "system",
+  ASSISTANT = "assistant",
 }
 
 const initialChat = {
-  id: "intro",
-  user: "nina",
-  dialog: {
-    __html:
-      "<p>With Ask Nina, you can pose questions and browse resources to expand your knowledge of STEM and entrepreuneurship.</p> <p>What would you like to know? Ask away!</p>",
-  },
-};
-const initialChatQuestion = {
-  id: "introQuestion",
-  user: "user",
-  dialog: {
-    __html:
-      "<p>With Ask Nina, you can pose questions and browse resources to expand your knowledge of STEM and entrepreuneurship.</p> <p>What would you like to know? Ask away!</p>",
-  },
+  role: SystemRoles.SYSTEM,
+  content:
+    "With Ask Nina, you can pose questions and browse resources to expand your knowledge of STEM and entrepreuneurship.What would you like to know? Ask away!",
 };
 
-const returnNinaResponse = (dialog: DialogProps) => {
+const returnNinaResponse = (dialog: DialogProps, index: number) => {
   return (
     <div
-      key={`dialog-${dialog.id}`}
+      key={`dialog-${dialog.role}-${index}`}
       className="w-full flex items-start justify-center bg-grey-100 border border-grey-300 p-4"
     >
-      <div className="relative w-12 h-12 p-1 mr-8">
+      <div className="relative w-12 h-12 p-1 mr-4">
         <Image src={AskNinaIcon} alt="ask nina in purple" />
       </div>
-      <div className="w-4/5" dangerouslySetInnerHTML={dialog.dialog} />
+      <div className="w-4/5 break-words">{dialog.content}</div>
     </div>
   );
 };
 
-const returnUserResponse = (dialog: DialogProps) => {
+const returnUserResponse = (dialog: DialogProps, index: number) => {
   return (
     <div
-      key={`dialog-${dialog.id}`}
-      className="w-full flex items-start justify-center text-right p-4"
+      key={`dialog-${dialog.role}-${index}`}
+      className="w-full flex items-center justify-center text-right p-4"
     >
-      <div className="w-4/5" dangerouslySetInnerHTML={dialog.dialog} />
-      <div className="relative w-12 h-12 p-1 ml-8">
+      <div className="w-4/5 flex text-right break-words justify-end flex-wrap text-wrap">
+        {dialog.content}
+      </div>
+      <div className="relative w-12 h-12 p-1 ml-4">
         {/* <Image src={AskNinaIcon} alt="ask nina in purple" /> */}
         <div className="w-12 h-12 rounded-full bg-yellowGreen" />
       </div>
     </div>
   );
 };
-const Chat = ({}: ChatProps) => {
-  const [conversation, setConversation] = useState<DialogProps[]>([
-    initialChat,
-    initialChatQuestion,
-    initialChat,
-    initialChatQuestion,
-    initialChat,
-    initialChatQuestion,
-    initialChat,
-    initialChatQuestion,
-    initialChat,
-    initialChatQuestion,
-    initialChat,
-  ]);
 
-  const handleEnter = () => {
-    console.log("add to conversation");
+const Chat = ({}: ChatProps) => {
+  const { initialQuestion, setInitialQuestion } = useContext(QuestionContext);
+
+  const [conversation, setConversation] = useState<DialogProps[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const messagesEndRef = useRef<null | HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [conversation]);
+
+  useEffect(() => {
+    if (initialQuestion) {
+      addToConversation(SystemRoles.USER, initialQuestion);
+
+      return function cleanup() {
+        setInitialQuestion("");
+      };
+    }
+  }, [initialQuestion, setInitialQuestion]);
+
+  useEffect(() => {
+    if (conversation && conversation.length) {
+      const isLastUser =
+        conversation[conversation?.length - 1].role == SystemRoles.USER;
+      if (isLastUser) {
+        getResponse();
+      }
+    }
+  }, [conversation]);
+
+  const addToConversation = (role: SystemRoles, content: string) => {
+    setConversation([...conversation, { role, content }]);
+  };
+
+  const handleEnter = async (question: string) => {
+    await addToConversation(SystemRoles.USER, question);
+  };
+
+  const getResponse = async () => {
+    setIsLoading(true);
+    const response = await getMessageResponse(conversation);
+    addToConversation(SystemRoles.ASSISTANT, "");
+    console.log({ response });
+    setIsLoading(false);
   };
 
   return (
-    <div className="w-full flex flex-col">
+    <div className="w-full flex flex-col h-[92vH]">
       <div className="flex-1 pb-16">
         <div className="w-full flex items-center justify-center p-4 flex-1">
-          <div className="relative w-12 h-12 p-1 mr-8">
+          <div className="relative w-12 h-12 p-1 mr-4">
             <Image src={AskNinaIcon} alt="ask nina in purple" />
           </div>
           <div className="w-4/5">Nina</div>
         </div>
         <div>
-          {conversation?.length &&
-            conversation.map((dialog) => {
-              if (dialog.user == "nina") {
-                return returnNinaResponse(dialog);
+          {returnNinaResponse(initialChat, Math.random())}
+          {conversation?.length ? (
+            conversation.map((dialog, index) => {
+              if (dialog.role !== SystemRoles.USER) {
+                return returnNinaResponse(dialog, index);
               } else {
-                return returnUserResponse(dialog);
+                return returnUserResponse(dialog, index);
               }
-            })}
+            })
+          ) : (
+            <div />
+          )}
         </div>
+        <div className="p-8 flex items-center justify-center">
+          {isLoading ? <PulseLoader color={"#423EEE"} size={12} /> : <div />}
+        </div>
+        <div ref={messagesEndRef} />
       </div>
       <div className="sticky bottom-0 w-full bg-white">
         <EnterQuery handleEnter={handleEnter} otherStyles={""} />

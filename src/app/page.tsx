@@ -1,6 +1,7 @@
 import Image from "next/image";
 import askNinaLogo from "../../public/logos/with-ask-nina-813x300.png";
 import MainExplore from "../components/explore/MainExplore";
+
 export default function Home() {
   return (
     <main className="flex h-screen flex-col items-center p-8">

@@ -3,7 +3,7 @@ import RegenerateResponseButton from "./RegenerateResponseButton";
 import QuestionQuery from "./QuestionQuery";
 
 interface EnterQueryProps {
-  handleEnter: MouseEventHandler;
+  handleEnter: (question: string) => void;
   otherStyles?: string;
 }
 const EnterQuery = ({ handleEnter, otherStyles = "" }: EnterQueryProps) => {
