@@ -5,7 +5,7 @@ const baseUrl =
     : `localhost:${localPort}`;
 
 export const getMessageResponse = async (messages: any[]) => {
-  const conversationUrl = `http://${baseUrl}/open-ai/converse`;
+  const conversationUrl = `http://${baseUrl}/open-ai/converse/`;
   const settings = {
     method: "POST",
     headers: {
@@ -17,7 +17,7 @@ export const getMessageResponse = async (messages: any[]) => {
   };
 
   try {
-    return await fetch(conversationUrl, settings);
+    return await fetch(conversationUrl, settings).then(res => res.json());
   } catch (error) {
     console.log({ error })
     return error
