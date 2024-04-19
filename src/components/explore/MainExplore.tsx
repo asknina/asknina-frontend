@@ -41,7 +41,6 @@ const MainExplore = ({}: MainExploreProps) => {
 
   const handleQuestionTextClick = (questionText: string) => {
     setInitialQuestion(questionText);
-
     router.push("/chat");
   };
 

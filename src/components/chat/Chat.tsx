@@ -10,7 +10,7 @@ import PulseLoader from "react-spinners/PulseLoader";
 
 interface ChatProps {}
 
-interface DialogProps {
+export interface DialogProps {
   role: SystemRoles;
   content: string;
 }
@@ -27,28 +27,28 @@ const initialChat = {
     "With Ask Nina, you can pose questions and browse resources to expand your knowledge of STEM and entrepreuneurship.What would you like to know? Ask away!",
 };
 
-const returnNinaResponse = (dialog: DialogProps, index: number) => {
+const returnNinaResponse = (message: MessageType, index: number) => {
   return (
     <div
-      key={`dialog-${dialog.role}-${index}`}
+      key={`dialog-${message.role}-${index}`}
       className="w-full flex items-start justify-center bg-grey-100 border border-grey-300 p-4"
     >
       <div className="relative w-12 h-12 p-1 mr-4">
         <Image src={AskNinaIcon} alt="ask nina in purple" />
       </div>
-      <div className="w-4/5 break-words">{dialog.content}</div>
+      <div className="w-4/5 break-words">{message.content}</div>
     </div>
   );
 };
 
-const returnUserResponse = (dialog: DialogProps, index: number) => {
+const returnUserResponse = (message: MessageType, index: number) => {
   return (
     <div
-      key={`dialog-${dialog.role}-${index}`}
+      key={`message-${message.role}-${index}`}
       className="w-full flex items-center justify-center text-right p-4"
     >
       <div className="w-4/5 flex text-right break-words justify-end flex-wrap text-wrap">
-        {dialog.content}
+        {message.content}
       </div>
       <div className="relative w-12 h-12 p-1 ml-4">
         {/* <Image src={AskNinaIcon} alt="ask nina in purple" /> */}
@@ -58,10 +58,22 @@ const returnUserResponse = (dialog: DialogProps, index: number) => {
   );
 };
 
+import { useChat } from "@axflow/models/react";
+import { MessageType } from "@axflow/models/shared";
+
+const localPort = "8000";
+const baseUrl =
+  process.env.NODE_ENV !== "production"
+    ? `localhost:${localPort}`
+    : `localhost:${localPort}`;
+
 const Chat = ({}: ChatProps) => {
   const { initialQuestion, setInitialQuestion } = useContext(QuestionContext);
+  const { input, messages, onChange, onSubmit } = useChat({
+    url: `http://${baseUrl}/open-ai/api/chat`,
+  });
 
-  const [conversation, setConversation] = useState<DialogProps[]>([]);
+  // const [conversation, setConversation] = useState<DialogProps[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
@@ -72,41 +84,44 @@ const Chat = ({}: ChatProps) => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [conversation]);
+  }, [messages]);
 
-  useEffect(() => {
-    if (initialQuestion) {
-      addToConversation(SystemRoles.USER, initialQuestion);
+  // useEffect(() => {
+  //   if (initialQuestion) {
+  //     addToConversation(SystemRoles.USER, initialQuestion);
 
-      return function cleanup() {
-        setInitialQuestion("");
-      };
-    }
-  }, [initialQuestion, setInitialQuestion]);
+  //     return function cleanup() {
+  //       setInitialQuestion("");
+  //     };
+  //   }
+  // }, [initialQuestion, setInitialQuestion]);
 
-  useEffect(() => {
-    if (conversation && conversation.length) {
-      const isLastUser =
-        conversation[conversation?.length - 1].role == SystemRoles.USER;
-      if (isLastUser) {
-        getResponse();
-      }
-    }
-  }, [conversation]);
+  // useEffect(() => {
+  //   if (conversation && conversation.length) {
+  //     const isLastUser =
+  //       conversation[conversation?.length - 1].role == SystemRoles.USER;
+  //     if (isLastUser) {
+  //       getResponse();
+  //     }
+  //   }
+  // }, [conversation]);
 
-  const addToConversation = (role: SystemRoles, content: string) => {
-    setConversation([...conversation, { role, content }]);
-  };
+  // const addToConversation = (role: SystemRoles, content: string) => {
+  //   // setConversation([...conversation, { role, content }]);
+  //   onSubmit();
+  // };
 
   const handleEnter = async (question: string) => {
-    await addToConversation(SystemRoles.USER, question);
+    // await addToConversation(SystemRoles.USER, question);
+    console.log("handle enter");
+    onSubmit();
   };
 
   const getResponse = async () => {
     setIsLoading(true);
-    const response = await getMessageResponse(conversation);
-    addToConversation(SystemRoles.ASSISTANT, "");
-    console.log({ response });
+    // const response = await getMessageResponse(conversation);
+    // const message = response?.message;
+    // addToConversation(SystemRoles.ASSISTANT, message);
     setIsLoading(false);
   };
 
@@ -120,9 +135,9 @@ const Chat = ({}: ChatProps) => {
           <div className="w-4/5">Nina</div>
         </div>
         <div>
-          {returnNinaResponse(initialChat, Math.random())}
-          {conversation?.length ? (
-            conversation.map((dialog, index) => {
+          {/* {returnNinaResponse(initialChat, Math.random())} */}
+          {messages?.length ? (
+            messages.map((dialog, index) => {
               if (dialog.role !== SystemRoles.USER) {
                 return returnNinaResponse(dialog, index);
               } else {
