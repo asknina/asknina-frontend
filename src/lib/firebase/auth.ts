@@ -2,6 +2,8 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
   onAuthStateChanged as _onAuthStateChanged,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword
 } from "firebase/auth";
 
 // import { auth } from "@/src/lib/firebase/firebase";
@@ -26,5 +28,21 @@ export async function signOut() {
     return auth.signOut();
   } catch (error) {
     console.error("Error signing out with Google", error);
+  }
+}
+
+export async function createUser(email: string, password: string) {
+  try {
+    await createUserWithEmailAndPassword(auth, email, password)
+  } catch (error) {
+    console.error("Error creating user", error)
+  }
+}
+
+export async function signInWithEmail(email: string, password: string) {
+  try {
+    await signInWithEmailAndPassword(auth, email, password)
+  } catch (error) {
+    console.error("Error logging in with email and password", error)
   }
 }

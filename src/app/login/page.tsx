@@ -7,6 +7,7 @@ import MainContainer from "@/components/common/MainContainer";
 import Button from "@/components/common/Button";
 import Image from "next/image";
 import askNinaLogo from "../../../public/logos/ask-nina-logo-400x400.png";
+import SignInEmail from "@/components/auth/SignInEmail";
 
 const Login = ({ user, isLoggedIn }: any) => {
   const { handleSignOut, handleSignInWithGoogle } = useAuth();
@@ -49,15 +50,16 @@ const Login = ({ user, isLoggedIn }: any) => {
           </div>
         </>
       ) : (
-        <div>
-          {/* <a href="#" onClick={handleSignInClick}>
-            Sign In with Google
-          </a> */}
+        <div className="flex flex-col items-center w-full">
+          <div className="w-full max-w-screen-sm">
+            <SignInEmail />
+          </div>
+          {/* <hr className="border-primaryPurple border w-full my-4 max-w-screen-sm" /> */}
           <div>
             <Button
               label={"Sign In with Google"}
               onClick={handleSignInClick}
-              otherStyles="shadow-md"
+              otherStyles="shadow-md w-40 justify-center"
             />
           </div>
         </div>
