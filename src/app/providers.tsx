@@ -1,42 +1,20 @@
 "use client";
-import { DialogProps } from "@/components/chat/Chat";
-import React, { createContext, useState } from "react";
+import React from "react";
 
-export const QuestionContext = createContext<any>(null);
-export const ChatContext = createContext<any>([]);
-export const CurrentChatContext = createContext<any>({
-  name: "",
-  conversation: [],
-});
+import { AuthStoreProvider } from "@/providers/authStoreProvider";
+import { ChatStoreProvider } from "@/providers/chatStoreProvider";
+import { ConversationStoreProvider } from "@/providers/conversationStoreProvider";
+
 interface ProvidersProps {
   children: React.ReactNode;
 }
 
-interface Chat {
-  name: string;
-  conversation: DialogProps[];
-}
-
 export function Providers({ children }: ProvidersProps) {
-  const [initialQuestion, setInitialQuestion] = useState(null);
-  const [chats, setChats] = useState([
-    {
-      name: "",
-      conversation: [],
-    },
-  ]);
-  const [currentChat, setCurrentChat] = useState({
-    name: "",
-    conversation: [],
-  });
-
   return (
-    <QuestionContext.Provider value={{ initialQuestion, setInitialQuestion }}>
-      <ChatContext.Provider value={{ chats, setChats }}>
-        <CurrentChatContext.Provider value={{ currentChat, setCurrentChat }}>
-          {children}
-        </CurrentChatContext.Provider>
-      </ChatContext.Provider>
-    </QuestionContext.Provider>
+    <AuthStoreProvider>
+      <ChatStoreProvider>
+        <ConversationStoreProvider>{children}</ConversationStoreProvider>
+      </ChatStoreProvider>
+    </AuthStoreProvider>
   );
 }

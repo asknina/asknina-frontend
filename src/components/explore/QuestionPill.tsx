@@ -1,20 +1,24 @@
 "use client";
 import React from "react";
 
+interface QuestionType {
+  question: string;
+  promptNumber: number;
+}
 interface QuestionPillProps {
-  questionText: string;
+  question: QuestionType;
   handleQuestionTextClick: Function;
 }
 const QuestionPill = ({
-  questionText,
+  question,
   handleQuestionTextClick,
 }: QuestionPillProps) => {
   return (
     <div
       className="bg-grey-100 text-sm w-full h-16 flex items-center justify-center rounded-full text-center p-2 hover:cursor-pointer"
-      onClick={() => handleQuestionTextClick(questionText)}
+      onClick={() => handleQuestionTextClick(question)}
     >
-      {questionText}
+      {question.question}
     </div>
   );
 };

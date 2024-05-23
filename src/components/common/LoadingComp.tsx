@@ -6,7 +6,7 @@ import MainContainer from "./MainContainer";
 
 const LoadingComp = () => {
   return (
-    <MainContainer>
+    <MainContainer styles="login-background h-screen w-full">
       <div className="flex relative w-1/2">
         <Image src={askNinaLogo} alt={"ask-nina"} priority />
       </div>

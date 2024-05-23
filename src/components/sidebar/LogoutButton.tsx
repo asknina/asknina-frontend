@@ -4,20 +4,22 @@ import AskNinaButton, { Variants } from "../common/Button";
 import { LuLogOut } from "react-icons/lu";
 import { onAuthStateChanged, signOut } from "@/lib/firebase/auth";
 import { useRouter } from "next/navigation";
-import { useAuth } from "../auth/useAuth";
+import { useAuthStore } from "@/providers/authStoreProvider";
 
 const LogoutButton = () => {
-  const { isLoggedIn, handleSignOut } = useAuth();
+  const { isLoggedIn, logout } = useAuthStore((state) => state);
   const router = useRouter();
 
   const handleLogin = () => {
     // route to login page
+    logout();
     router.push("/login");
   };
 
   const handleLogout = async () => {
-    await handleSignOut();
+    logout();
   };
+
   return (
     <AskNinaButton
       variant={Variants.withoutBorder}

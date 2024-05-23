@@ -3,11 +3,18 @@ import React from "react";
 import AskNinaButton from "../common/Button";
 import { LuRefreshCw } from "react-icons/lu";
 
-const RegenerateResponseButton = () => {
+interface RegenerateResponseButtonProps {
+  reload: any;
+}
+const RegenerateResponseButton = ({
+  reload,
+}: RegenerateResponseButtonProps) => {
   return (
     <AskNinaButton
       label={"Regenerate response"}
-      onClick={() => console.log("regenerate response")}
+      onClick={() => {
+        reload();
+      }}
       otherStyles=" text-center"
       icon={<LuRefreshCw />}
     />

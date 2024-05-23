@@ -3,16 +3,27 @@ import RegenerateResponseButton from "./RegenerateResponseButton";
 import QuestionQuery from "./QuestionQuery";
 
 interface EnterQueryProps {
-  handleEnter: (question: string) => void;
+  onSubmit: any;
+  input: any;
+  onChange: any;
+  reload?: any;
+  showReload?: boolean;
   otherStyles?: string;
 }
-const EnterQuery = ({ handleEnter, otherStyles = "" }: EnterQueryProps) => {
+const EnterQuery = ({
+  onSubmit,
+  input,
+  onChange,
+  reload,
+  showReload = true,
+  otherStyles = "",
+}: EnterQueryProps) => {
   return (
     <div
       className={`flex flex-col items-center justify-center space-y-2 p-2 ${otherStyles}`}
     >
-      <RegenerateResponseButton />
-      <QuestionQuery onEnter={handleEnter} />
+      {showReload && <RegenerateResponseButton reload={reload} />}
+      <QuestionQuery onSubmit={onSubmit} input={input} onChange={onChange} />
 
       <p className="text-xs text-grey-200">
         Ask Nina AI. Our goal is to connect girls with STEM and entrepreneurial

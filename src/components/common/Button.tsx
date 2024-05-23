@@ -1,5 +1,6 @@
 "use client";
 import React, {
+  ButtonHTMLAttributes,
   Component,
   MouseEventHandler,
   ReactElement,
@@ -12,6 +13,7 @@ interface AskNinaButtonProps {
   variant?: Variants;
   icon?: ReactElement;
   otherStyles?: string;
+  args?: ButtonHTMLAttributes<any>;
 }
 
 export enum Variants {
@@ -24,6 +26,7 @@ const AskNinaButton = ({
   variant = Variants.withBorder,
   icon,
   otherStyles,
+  args,
 }: AskNinaButtonProps) => {
   return (
     <button
@@ -31,6 +34,7 @@ const AskNinaButton = ({
       className={` ${
         variant == Variants.withBorder ? "border border-primaryPurple" : ""
       } text-sm text-left rounded-md p-2 inline-flex items-center space-x-2 ${otherStyles}`}
+      {...args}
     >
       {icon && <span>{icon}</span>}
       <span>{label}</span>

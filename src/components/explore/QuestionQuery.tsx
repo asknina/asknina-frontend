@@ -1,32 +1,30 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import { IoMdSend } from "react-icons/io";
 
 interface QuestionQueryProps {
-  onEnter: (question: string) => void;
+  onSubmit: any;
+  input: any;
+  onChange: any;
 }
-const QuestionQuery = ({ onEnter }: QuestionQueryProps) => {
-  const [question, setQuestion] = useState("");
 
-  const handleEnter = () => {
-    onEnter(question);
-    setQuestion("");
-  };
-
+const QuestionQuery = ({ onSubmit, input, onChange }: QuestionQueryProps) => {
   return (
-    <div className="rounded-sm w-5/6 p-2 border-2 border-grey-300 bg-grey-100 inline-flex items-center space-x-2">
-      <input
-        className="bg-grey-100 flex-1 p-1"
-        placeholder="Enter your question here"
-        value={question}
-        onChange={(e) => setQuestion(e.target.value)}
-      />
-      <div className={`${question ? "text-primaryPurple" : "text-grey-300"}`}>
-        <button className="flex" disabled={!question} onClick={handleEnter}>
-          <IoMdSend size={20} />
-        </button>
+    <form onSubmit={onSubmit} className="w-5/6">
+      <div className="rounded-sm w-full p-2 border-2 border-grey-300 bg-grey-100 inline-flex items-center space-x-2">
+        <input
+          className="bg-grey-100 flex-1 p-1"
+          placeholder="Enter your question here"
+          value={input || ""}
+          onChange={onChange}
+        />
+        <div className={`${input ? "text-primaryPurple" : "text-grey-300"}`}>
+          <button type="submit" className="flex" disabled={!input}>
+            <IoMdSend size={20} />
+          </button>
+        </div>
       </div>
-    </div>
+    </form>
   );
 };
 

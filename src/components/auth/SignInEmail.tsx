@@ -1,46 +1,75 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Button from "@/components/common/Button";
-import { createUser } from "@/lib/firebase/auth";
+import validator from "validator";
 
-const SignInEmail = () => {
-  const [email, setEmail] = useState<string>();
-  const [password, setPassword] = useState<string>();
+interface SignInEmailProps {
+  handleSignIn: Function;
+}
 
-  const handleSignInClick = () => {
+const SignInEmail = ({ handleSignIn }: SignInEmailProps) => {
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+
+  const [error, setError] = useState("");
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
+
+  const handleLogin = (e: any) => {
+    e.preventDefault();
     if (email && password) {
-      // TODO: validate email
-      createUser(email, password);
+      if (validator.isEmail(email)) {
+        handleSignIn(email, password);
+      } else {
+        setError("Please enter a valid email address!");
+        setShowErrorMessage(true);
+      }
     }
   };
 
+  useEffect(() => {
+    if (error) {
+      setTimeout(() => {
+        setShowErrorMessage(false);
+        setError("");
+      }, 3000);
+    }
+  }, [error]);
+
   return (
-    <div className="w-full p-4 space-y-2 flex flex-col items-center">
-      <div className="flex flex-col items-center space-y-2 mb-6  w-full md:w-3/5">
-        <div className="flex flex-row w-full">
+    <div className="w-full space-y-2 flex flex-col items-center">
+      <form className="flex flex-col items-center w-full md:w-3/5">
+        <div className="flex flex-row w-full mb-4">
           <div className="w-1/3">Email:</div>
           <input
             className="border rounded-sm border-primaryPurple flex-1 p-1"
             value={email}
+            type="email"
             onChange={(e) => setEmail(e.target.value)}
           />
         </div>
-        <div className="flex flex-row w-full">
+        <div className="flex flex-row w-full mb-2">
           <div className="w-1/3">Password:</div>
-          <input
-            className="border rounded-sm border-primaryPurple flex-1 p-1"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+          <div className="w-2/3 flex flex-col">
+            <input
+              className="border rounded-sm border-primaryPurple flex-1 p-1"
+              value={password}
+              type="current-password"
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            {/* TODO: Forgot password */}
+            <div className="mt-2 text-xs text-left">Forgot password?</div>
+          </div>
+        </div>
+        {showErrorMessage && <div className="text-red-500">{error}</div>}
+        <div className="flex flex-row w-full justify-center items-center mb-2">
+          <Button
+            label={"Sign In"}
+            onClick={(e) => handleLogin(e)}
+            otherStyles="bg-primaryPurple text-white border-2 border-black rounded-md w-full p-1 shadow-xl text-center justify-center"
+            args={{ type: "submit" }}
           />
         </div>
-      </div>
-      <div className="">
-        <Button
-          label={"Sign In"}
-          onClick={handleSignInClick}
-          otherStyles="shadow-md w-40 text-center justify-center"
-        />
-      </div>
+      </form>
     </div>
   );
 };

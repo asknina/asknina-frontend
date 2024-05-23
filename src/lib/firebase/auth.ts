@@ -3,11 +3,13 @@ import {
   signInWithPopup,
   onAuthStateChanged as _onAuthStateChanged,
   createUserWithEmailAndPassword,
-  signInWithEmailAndPassword
+  signInWithEmailAndPassword,
+  getIdToken,
+  getAuth,
+  UserCredential,
 } from "firebase/auth";
 
-// import { auth } from "@/src/lib/firebase/firebase";
-import { auth } from "../../lib/firebase/firebase";
+import { auth } from "@/lib/firebase/firebase";
 
 export function onAuthStateChanged(cb: any) {
   return _onAuthStateChanged(auth, cb);
@@ -15,12 +17,7 @@ export function onAuthStateChanged(cb: any) {
 
 export async function signInWithGoogle() {
   const provider = new GoogleAuthProvider();
-
-  try {
-    await signInWithPopup(auth, provider);
-  } catch (error) {
-    console.error("Error signing in with Google", error);
-  }
+  return await signInWithPopup(auth, provider);
 }
 
 export async function signOut() {
@@ -32,17 +29,21 @@ export async function signOut() {
 }
 
 export async function createUser(email: string, password: string) {
-  try {
-    await createUserWithEmailAndPassword(auth, email, password)
-  } catch (error) {
-    console.error("Error creating user", error)
-  }
+  return await createUserWithEmailAndPassword(auth, email, password).catch(e => { return e })
 }
 
 export async function signInWithEmail(email: string, password: string) {
-  try {
-    await signInWithEmailAndPassword(auth, email, password)
-  } catch (error) {
-    console.error("Error logging in with email and password", error)
-  }
+  return await signInWithEmailAndPassword(auth, email, password).catch(e => { return e })
+}
+
+export async function getUser() {
+  return await auth.currentUser
+}
+
+export async function getFirebaseToken() {
+  return await auth.currentUser?.getIdToken()
+}
+
+export async function getFirebaseAuth() {
+  return await getAuth()
 }

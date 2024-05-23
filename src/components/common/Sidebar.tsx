@@ -8,41 +8,43 @@ import LogoutButton from "../sidebar/LogoutButton";
 
 import { IoMdAdd } from "react-icons/io";
 import { useRouter } from "next/navigation";
-import { useAuth } from "../auth/useAuth";
-import { DialogProps } from "../chat/Chat";
-
-interface Chat {
-  name: string;
-  conversation: DialogProps[];
-}
+import { DialogProps, Conversation } from "@/types/chat";
+import { getAllUserConversations } from "@/lib/firebase/data/chats";
+import { useAuthStore } from "@/providers/authStoreProvider";
+import { useConversationStore } from "@/providers/conversationStoreProvider";
 
 const Sidebar = ({}) => {
-  const [chats, setChats] = useState<Chat[]>([]);
-  const { isLoggedIn } = useAuth();
+  const [chats, setChats] = useState<Conversation[]>([]);
+  const { isLoggedIn, user } = useAuthStore((state) => state);
+  const {
+    conversations,
+    setConversations,
+    setCurrentConversation,
+    createConversation,
+  } = useConversationStore((state) => state);
   const router = useRouter();
 
-  const [currentChat, setCurrentChat] = useState(chats[0]);
-  // useEffect(() => {
-  //   const unsubscribe = onAuthStateChanged((authUser: any) => {
-  //     setUser(authUser);
-  //     setIsLoggedIn(true);
-  //   });
+  useEffect(() => {
+    if (user && user.uid) {
+      getConversations();
+    }
+  }, [user]);
 
-  //   return () => unsubscribe();
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
+  const getConversations = async () => {
+    await getAllUserConversations(user.uid).then((convos: Conversation[]) => {
+      setConversations(convos);
+    });
+  };
 
-  const handleCreateNewChat = () => {
-    const newChat = {
-      name: "New Chat",
-      conversation: [],
-    };
-    setChats([...chats, newChat]);
+  const handleCreateNewChat = async () => {
+    const conversation = await createConversation(user.uid, []);
+    // setCurrentChat as the newly created conversation
     router.push("/chat");
   };
 
-  const handleSelectChat = (chatIndex: number) => {
-    setCurrentChat(chats[chatIndex]);
+  const handleSelectChat = (conversationId: string) => {
+    setCurrentConversation(conversationId);
+    router.push("/chat");
   };
 
   const handleDeleteChat = (chatIndex: number) => {
@@ -52,8 +54,9 @@ const Sidebar = ({}) => {
     ];
     setChats(remainingChats);
   };
+
   return (
-    <div className="p-2 w-1/5 flex flex-col text-primaryPurple bg-grey-100 h-screen">
+    <div className="p-2 w-1/5 flex flex-col text-primaryPurple h-screen login-background">
       <div className="flex-1">
         <AskNinaButton
           label={"New chat"}
@@ -63,17 +66,24 @@ const Sidebar = ({}) => {
         />
         <div className="flex flex-col my-2 space-y-2">
           {/* Nina discovery page */}
-          <ChatSidebarButton
-            label="Nina discovery page"
-            onClick={() => router.push("/")}
-          />
-
-          {chats?.length
-            ? chats.map((chat, index) => (
+          <button
+            onClick={() => {
+              setCurrentConversation("");
+              router.push("/");
+            }}
+            className="px-2 text-left"
+          >
+            <span className="text-sm text-left underline">
+              Nina discovery page
+            </span>
+          </button>
+          {conversations?.length
+            ? conversations.map((chat, index) => (
                 <ChatSidebarButton
-                  key={chat.name + index}
-                  label={chat.name + index}
-                  onClick={() => handleSelectChat(index)}
+                  key={chat.conversationId}
+                  label={chat.title}
+                  conversation={chat}
+                  onClick={() => handleSelectChat(chat.conversationId)}
                   onDelete={() => handleDeleteChat(index)}
                 />
               ))
