@@ -1,12 +1,12 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import AskNinaButton from "./Button";
+import AskNinaButton, { Variants } from "./Button";
 import ChatSidebarButton from "../sidebar/ChatSidebarButton";
 import ClearConversationsButton from "../sidebar/ClearConversationsButton";
 import HelpButton from "../sidebar/HelpButton";
 import LogoutButton from "../sidebar/LogoutButton";
 
-import { IoMdAdd } from "react-icons/io";
+import { IoMdAdd, IoIosHome } from "react-icons/io";
 import { useRouter } from "next/navigation";
 import { DialogProps, Conversation } from "@/types/chat";
 import { getAllUserConversations } from "@/lib/firebase/data/chats";
@@ -56,16 +56,16 @@ const Sidebar = ({}) => {
       <div className="flex-1">
         <div className="flex flex-col my-2 space-y-2">
           {/* Nina discovery page */}
-          <button
+          <AskNinaButton
+            label={"Home"}
             onClick={() => {
               setCurrentConversation("");
               router.push("/");
             }}
-            className="px-2 text-left"
-          >
-            <span className="text-sm text-left underline">Home</span>
-          </button>
-
+            otherStyles="w-full"
+            icon={<IoIosHome />}
+            variant={Variants.withoutBorder}
+          />
           <AskNinaButton
             label={"New chat"}
             onClick={() => handleCreateNewChat()}

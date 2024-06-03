@@ -1,20 +1,8 @@
 "use client";
-import { MessageType } from "@axflow/models/shared";
-import React, { useState } from "react";
+import React from "react";
 import AskNinaIcon from "../../../public/logos/antenna-90x90.png";
 import Image from "next/image";
 import { Remark } from "react-remark";
-
-import { HiOutlineHandThumbDown, HiOutlineHandThumbUp } from "react-icons/hi2";
-import { AdditionalMessageDetails } from "@/types/chat";
-import { useConversationStore } from "@/providers/conversationStoreProvider";
-
-interface SystemResponseProps {
-  message: MessageType & AdditionalMessageDetails;
-  isCurrentChat: boolean;
-  loading: boolean;
-  isResponded: boolean;
-}
 
 const InitialChat = () => {
   return (
@@ -30,8 +18,8 @@ const InitialChat = () => {
         <div className="flex-1 break-words">
           <Remark>
             With Ask Nina, you can pose questions and browse resources to expand
-            your knowledge of STEM and entrepreuneurship. What would you like to
-            know? Ask away!
+            your knowledge of STEM careers. What would you like to know? Ask
+            away!
           </Remark>
         </div>
       </div>
