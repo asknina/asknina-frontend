@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@axflow/models": "^0.0.25",
+    "@sentry/nextjs": "^8.7.0",
     "firebase": "^10.10.0",
     "firebase-admin": "^12.0.0",
     "firebaseui": "^6.1.0",

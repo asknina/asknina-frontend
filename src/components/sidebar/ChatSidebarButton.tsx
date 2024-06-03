@@ -56,6 +56,7 @@ const ChatSidebarButton = ({
           <div className="space-x-2 inline-flex items-center ml-2">
             <button
               onClick={() => saveNewTitle()}
+              type="submit"
               className="hover:cursor-pointer"
             >
               <span>

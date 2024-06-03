@@ -77,7 +77,15 @@ const MainExplore = ({}: MainExploreProps) => {
       setCurrentConversation(matchedConvo.conversationId);
     } else {
       setInitialQuestion(question);
-      await createConversation(user.uid, [], question.question);
+      const { promptNumber } = question;
+      const initialMessages = [
+        createMessage({
+          role: SystemRoles.SYSTEM,
+          content: systemPrompts[promptNumber],
+        }),
+        createMessage({ role: SystemRoles.USER, content: question.question }),
+      ];
+      await createConversation(user.uid, initialMessages, question.question);
     }
     router.push("/chat");
   };

@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-// import AskNinaIcon from "../../../public/logos/antenna-inverted-90x90.png";
-import AskNinaIcon from "../../../public/logos/antenna-90x90.png";
+import AskNinaIcon from "@public/logos/antenna-90x90.png";
 import Image from "next/image";
 import EnterQuery from "../explore/EnterQuery";
 
@@ -9,31 +8,24 @@ import { useChat } from "@axflow/models/react";
 import { MessageType, createMessage } from "@axflow/models/shared";
 
 import PulseLoader from "react-spinners/PulseLoader";
-import SystemResponse from "./SystemResponse";
-
 import { IoClose } from "react-icons/io5";
 import { useRouter } from "next/navigation";
-import {
-  getConversationMessages,
-  updateConversationMessages,
-} from "@/lib/firebase/data/chats";
+
+import { updateConversationMessages } from "@/lib/firebase/data/chats";
 import { useChatStore } from "@/providers/chatStoreProvider";
 import { useAuthStore } from "@/providers/authStoreProvider";
+import { useConversationStore } from "@/providers/conversationStoreProvider";
 import { DialogProps, SystemRoles } from "@/types/chat";
 
-import { useConversationStore } from "@/providers/conversationStoreProvider";
 import RenderMessages from "./RenderMessages";
 import InitialChat from "./InitialChat";
 import { systemPrompts } from "@/lib/util/constants";
-interface ChatProps {
-  conversationId?: string;
-}
 
 const localPort = "8000";
 const baseUrl =
   process.env.NODE_ENV !== "production"
     ? `localhost:${localPort}`
-    : `localhost:${localPort}`;
+    : process.env.BACKEND_API;
 
 const Chat = () => {
   const [numberReload, setNumberReload] = useState(0);
@@ -47,7 +39,7 @@ const Chat = () => {
     currentConversation,
     currentConvoMessages,
     setCurrentConversation,
-    updateConversation,
+    updateConversationMessages,
   } = useConversationStore((state) => state);
 
   const { user } = useAuthStore((state) => state);
@@ -56,6 +48,12 @@ const Chat = () => {
       url: `http://${baseUrl}/open-ai/api/chat/`,
       headers: {
         Authorization: `Bearer ${user.accessToken}`,
+      },
+      onNewMessage: async (message: MessageType) => {
+        return await updateConversationMessages(
+          currentConversation.conversationId,
+          [message]
+        );
       },
     });
 
@@ -69,9 +67,7 @@ const Chat = () => {
     const sortedMessages = [...currentConvoMessages].sort((msgA, msgB) =>
       msgB.created > msgA.created ? -1 : 1
     );
-    if (sortedMessages) {
-      setMessages(sortedMessages);
-    }
+    setMessages(sortedMessages);
   }, [currentConvoMessages]);
 
   useEffect(() => {
@@ -86,13 +82,13 @@ const Chat = () => {
         )
       );
     } else {
-      setCleanedMessages(messages);
+      setCleanedMessages([]);
     }
   }, [messages]);
 
   useEffect(() => {
     if (initialQuestion?.question?.length && user.accessToken) {
-      setMessages([
+      const newMessages = [
         createMessage({
           role: SystemRoles.SYSTEM,
           content: systemPrompts[initialQuestion.promptNumber],
@@ -101,7 +97,8 @@ const Chat = () => {
           role: SystemRoles.USER,
           content: initialQuestion.question,
         }),
-      ]);
+      ];
+      setMessages(newMessages);
       onSubmit();
 
       return function cleanup() {
@@ -109,14 +106,6 @@ const Chat = () => {
       };
     }
   }, [initialQuestion, setInitialQuestion, user]);
-
-  const addToConversation = async (role: SystemRoles, content: string) => {
-    if (content?.length > 0) {
-      setMessages([...messages, createMessage({ role, content })]);
-      setNumberReload(0);
-      onSubmit();
-    }
-  };
 
   const regenerate = () => {
     setNumberReload(numberReload + 1);
@@ -129,29 +118,6 @@ const Chat = () => {
   const router = useRouter();
 
   const handleCloseButton = async () => {
-    // TODO: this only checks if the current LIST doesn't have new messages:
-    // 2 scenarios: not in currentConversation.messages --> updateConversationDetails
-    // not in currentConvoMessages
-    const messageIds = currentConvoMessages.map((msg) => msg.id);
-    const newMessages = messages.filter((msg) => !messageIds.includes(msg.id));
-    if (newMessages?.length) {
-      await updateConversationMessages(
-        currentConversation.conversationId,
-        newMessages
-      );
-    }
-
-    const newMessageIdsToAddToConvo: string[] = messages
-      .filter((msg) => !currentConversation.messages.includes(msg.id))
-      .map((msg) => msg.id);
-    const newMessagesForConvo = [
-      ...currentConversation.messages,
-      ...newMessageIdsToAddToConvo,
-    ];
-    await updateConversation(currentConversation.conversationId, {
-      messages: newMessagesForConvo,
-    });
-
     setCurrentConversation("");
     router.push("/");
   };
@@ -172,11 +138,7 @@ const Chat = () => {
         </div>
         <div>
           <InitialChat />
-          {cleanedMessages?.length ? (
-            <RenderMessages loading={loading} messages={cleanedMessages} />
-          ) : (
-            <div />
-          )}
+          <RenderMessages loading={loading} messages={cleanedMessages} />
         </div>
         {loading ? (
           <div className="p-8 flex items-center justify-center">
@@ -193,7 +155,7 @@ const Chat = () => {
           input={input}
           onChange={onChange}
           reload={regenerate}
-          showReload={numberReload < 3 && !!cleanedMessages.length}
+          showReload={false}
         />
       </div>
     </div>

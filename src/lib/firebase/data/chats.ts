@@ -7,6 +7,7 @@ import {
     addDoc,
     updateDoc,
     serverTimestamp,
+    deleteDoc,
 } from "firebase/firestore";
 import { db } from "../firebase";
 import { getUser } from "./users";
@@ -57,7 +58,7 @@ export async function createNewConversation(
     messages: any,
     promptQuestion?: string
 ): Promise<any> {
-    const partialConvo: Partial<Conversation> = { title }
+    const partialConvo: Partial<Conversation> = { title, messages: [] }
     if (promptQuestion) {
         partialConvo.promptQuestion = promptQuestion
     }
@@ -73,6 +74,20 @@ export async function createNewConversation(
         conversations: newConvos,
     }).then(() => {
         return convoDoc.id
+    });
+}
+
+export async function deleteConversation(
+    userId: string,
+    conversationId: string
+): Promise<any> {
+    //    deleteDocument
+    await deleteDoc(doc(db, "conversations", conversationId))
+    // delete from user list
+    const user = await getUser(userId);
+    const filteredConvos = [...(user?.conversations || [])]?.filter(convoId => convoId !== conversationId)
+    return await updateDoc(doc(db, "users", userId), {
+        conversations: filteredConvos,
     });
 }
 
@@ -114,7 +129,8 @@ export async function respondToChat(
     response: boolean
 ) {
     return await updateDoc(doc(db, "conversations", conversationId, "messages", messageId), {
-        liked: response, timeResponded: serverTimestamp()
+        response:
+            { liked: response, timeResponded: serverTimestamp() }
     }).then(async () => {
         return await getMessage(conversationId, messageId)
     })

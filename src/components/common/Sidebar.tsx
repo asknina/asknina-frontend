@@ -14,13 +14,13 @@ import { useAuthStore } from "@/providers/authStoreProvider";
 import { useConversationStore } from "@/providers/conversationStoreProvider";
 
 const Sidebar = ({}) => {
-  const [chats, setChats] = useState<Conversation[]>([]);
   const { isLoggedIn, user } = useAuthStore((state) => state);
   const {
     conversations,
     setConversations,
     setCurrentConversation,
     createConversation,
+    deleteConversation,
   } = useConversationStore((state) => state);
   const router = useRouter();
 
@@ -47,23 +47,13 @@ const Sidebar = ({}) => {
     router.push("/chat");
   };
 
-  const handleDeleteChat = (chatIndex: number) => {
-    const remainingChats = [
-      ...chats.slice(0, chatIndex),
-      ...chats.slice(chatIndex + 1),
-    ];
-    setChats(remainingChats);
+  const handleDeleteChat = (conversationId: string) => {
+    deleteConversation(user.uid, conversationId);
   };
 
   return (
     <div className="p-2 w-1/5 flex flex-col text-primaryPurple h-screen login-background">
       <div className="flex-1">
-        <AskNinaButton
-          label={"New chat"}
-          onClick={() => handleCreateNewChat()}
-          otherStyles="w-full"
-          icon={<IoMdAdd />}
-        />
         <div className="flex flex-col my-2 space-y-2">
           {/* Nina discovery page */}
           <button
@@ -73,10 +63,15 @@ const Sidebar = ({}) => {
             }}
             className="px-2 text-left"
           >
-            <span className="text-sm text-left underline">
-              Nina discovery page
-            </span>
+            <span className="text-sm text-left underline">Home</span>
           </button>
+
+          <AskNinaButton
+            label={"New chat"}
+            onClick={() => handleCreateNewChat()}
+            otherStyles="w-full"
+            icon={<IoMdAdd />}
+          />
           {conversations?.length
             ? conversations.map((chat, index) => (
                 <ChatSidebarButton
@@ -84,7 +79,7 @@ const Sidebar = ({}) => {
                   label={chat.title}
                   conversation={chat}
                   onClick={() => handleSelectChat(chat.conversationId)}
-                  onDelete={() => handleDeleteChat(index)}
+                  onDelete={() => handleDeleteChat(chat.conversationId)}
                 />
               ))
             : null}
