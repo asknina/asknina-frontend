@@ -21,6 +21,7 @@ const Sidebar = ({}) => {
     setCurrentConversation,
     createConversation,
     deleteConversation,
+    currentConversation,
   } = useConversationStore((state) => state);
   const router = useRouter();
 
@@ -49,6 +50,9 @@ const Sidebar = ({}) => {
 
   const handleDeleteChat = (conversationId: string) => {
     deleteConversation(user.uid, conversationId);
+    if (currentConversation.conversationId == conversationId) {
+      router.push("/home");
+    }
   };
 
   return (

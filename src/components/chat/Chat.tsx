@@ -11,7 +11,6 @@ import PulseLoader from "react-spinners/PulseLoader";
 import { IoClose } from "react-icons/io5";
 import { useRouter } from "next/navigation";
 
-import { updateConversationMessages } from "@/lib/firebase/data/chats";
 import { useChatStore } from "@/providers/chatStoreProvider";
 import { useAuthStore } from "@/providers/authStoreProvider";
 import { useConversationStore } from "@/providers/conversationStoreProvider";
@@ -45,7 +44,7 @@ const Chat = () => {
   const { user } = useAuthStore((state) => state);
   const { messages, setMessages, loading, reload, onSubmit, input, onChange } =
     useChat({
-      url: `http://${baseUrl}/open-ai/api/chat/`,
+      url: `http://${baseUrl}/api/chat/`,
       headers: {
         Authorization: `Bearer ${user.accessToken}`,
       },
@@ -55,6 +54,7 @@ const Chat = () => {
           [message]
         );
       },
+      onError: (error) => console.log(error),
     });
 
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
