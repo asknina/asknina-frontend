@@ -41,7 +41,7 @@ const ChatSidebarButton = ({
   };
   return (
     <div
-      className={`inline-flex p-2 text-sm flex-row justify-between  shadow-sm rounded-sm overflow-hidden ${
+      className={`inline-flex w-full p-2 text-sm flex-row justify-between  shadow-sm rounded-sm overflow-hidden ${
         isCurrent ? "bg-primaryPurple text-white" : "bg-white"
       }`}
     >
@@ -76,13 +76,13 @@ const ChatSidebarButton = ({
       ) : (
         <>
           <div
-            className="space-x-2 inline-flex items-center hover:cursor-pointer"
+            className="space-x-2 inline-flex items-center hover:cursor-pointer truncate text-wrap flex-1 w-48 h-6 "
             onClick={() => onClick()}
           >
             <span>
               <MdOutlineChatBubbleOutline />
             </span>
-            <span>{label?.toString()}</span>
+            <span className="self-start">{label?.toString()}</span>
           </div>
           <div className="space-x-2 inline-flex items-center">
             <button onClick={handleEditClick} className="hover:cursor-pointer">

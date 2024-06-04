@@ -56,43 +56,41 @@ const Sidebar = ({}) => {
   };
 
   return (
-    <div className="p-2 w-1/5 flex flex-col text-primaryPurple h-screen login-background">
-      <div className="flex-1">
-        <div className="pb-2">
-          <AskNinaButton
-            label={"Home"}
-            onClick={() => {
-              setCurrentConversation("");
-              router.push("/");
-            }}
-            otherStyles="w-full"
-            icon={<IoIosHome />}
-            variant={Variants.withoutBorder}
-          />
-          <AskNinaButton
-            label={"Start a new conversation"}
-            onClick={() => handleCreateNewChat()}
-            otherStyles="w-full"
-            icon={<IoMdAdd />}
-          />
-        </div>
-        <div className="flex flex-col my-2 space-y-2 flex-1 overflow-y-auto">
-          {/* Nina discovery page */}
-          {conversations?.length
-            ? conversations.map((chat, index) => (
-                <ChatSidebarButton
-                  key={chat.conversationId}
-                  label={chat.title}
-                  conversation={chat}
-                  onClick={() => handleSelectChat(chat.conversationId)}
-                  onDelete={() => handleDeleteChat(chat.conversationId)}
-                />
-              ))
-            : null}
-        </div>
+    <div className=" w-1/5 flex flex-col text-primaryPurple h-screen login-background max-h-screen">
+      <div className=" h-content p-2">
+        <AskNinaButton
+          label={"Home"}
+          onClick={() => {
+            setCurrentConversation("");
+            router.push("/");
+          }}
+          otherStyles="w-full"
+          icon={<IoIosHome />}
+          variant={Variants.withoutBorder}
+        />
+        <AskNinaButton
+          label={"Start a new conversation"}
+          onClick={() => handleCreateNewChat()}
+          otherStyles="w-full"
+          icon={<IoMdAdd />}
+        />
+      </div>
+      <div className="flex-1 my-2 space-y-2 overflow-y-auto p-2">
+        {/* Nina discovery page */}
+        {conversations?.length
+          ? conversations.map((chat, index) => (
+              <ChatSidebarButton
+                key={chat.conversationId}
+                label={chat.title}
+                conversation={chat}
+                onClick={() => handleSelectChat(chat.conversationId)}
+                onDelete={() => handleDeleteChat(chat.conversationId)}
+              />
+            ))
+          : null}
       </div>
 
-      <div className="flex flex-col space-y-2">
+      <div className="flex flex-col space-y-2 p-2">
         <hr className="border-grey-400 border" />
         {isLoggedIn ? (
           <>

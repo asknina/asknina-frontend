@@ -56,6 +56,10 @@ const connectQuestions = [
       "What kinds of STEM extracurriculars are good for high schoolers?",
     promptNumber: 2,
   },
+  {
+    question: "How can I get a summer internship in STEM?",
+    promptNumber: 2,
+  },
 ];
 const MainExplore = ({}: MainExploreProps) => {
   const router = useRouter();

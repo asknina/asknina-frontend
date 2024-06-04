@@ -12,7 +12,6 @@ import {
 import { db } from "../firebase";
 import { getUser } from "./users";
 import { AdditionalMessageDetails, Conversation } from "@/types/chat";
-import { createTitle } from "@/lib/util/utilities";
 import { MessageType } from "@axflow/models/shared";
 
 // user --> {conversations: ["1", "2"], userId, username, etc.}

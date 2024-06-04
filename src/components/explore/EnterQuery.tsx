@@ -26,8 +26,8 @@ const EnterQuery = ({
       <QuestionQuery onSubmit={onSubmit} input={input} onChange={onChange} />
 
       <p className="text-xs text-grey-200">
-        Ask Nina AI. Our goal is to connect girls with STEM and entrepreneurial
-        resources. Your feedback will help us improve.
+        Ask Nina AI. Our mission to empower teen girls to discover STEM careers.
+        Your feedback will help us improve.
       </p>
     </div>
   );

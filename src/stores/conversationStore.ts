@@ -50,7 +50,8 @@ export const createConversationStore = (
             }
         },
         createConversation: async (userId, messages, promptQuestion = "") => {
-            return await createNewConversation(userId, createTitle(), messages, promptQuestion).then(async (convoId) => {
+            const title = promptQuestion ? promptQuestion : createTitle()
+            await createNewConversation(userId, title, messages, promptQuestion).then(async (convoId) => {
                 const convo = await getConversation(convoId)
                 set((state) => ({ conversations: [...state.conversations, convo], currentConversation: convo }))
                 get().setCurrentConversation(convo.conversationId)

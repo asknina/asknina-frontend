@@ -119,7 +119,7 @@ const Chat = () => {
 
   const handleCloseButton = async () => {
     setCurrentConversation("");
-    router.push("/");
+    router.push("/home");
   };
 
   return (
@@ -130,11 +130,13 @@ const Chat = () => {
         </button>
       </div>
       <div className="w-full flex flex-col pb-16 flex-1 justify-start">
-        <div className="w-full flex items-center justify-center p-4">
-          <div className="relative w-12 h-12 p-1 mr-4">
-            <Image src={AskNinaIcon} alt="ask nina in purple" />
+        <div className="w-full flex flex-row justify-center p-4">
+          <div className="flex flex-row max-w-screen-lg items-center w-full">
+            <div className="relative w-12 h-12 p-1 mr-4 self-start">
+              <Image src={AskNinaIcon} alt="ask nina in purple" />
+            </div>
+            <div className="flex-1">Hi, I&apos;m Nina!</div>
           </div>
-          <div className="w-4/5">Nina</div>
         </div>
         <div>
           <InitialChat />
