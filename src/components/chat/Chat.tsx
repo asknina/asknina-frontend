@@ -14,7 +14,7 @@ import { useRouter } from "next/navigation";
 import { useChatStore } from "@/providers/chatStoreProvider";
 import { useAuthStore } from "@/providers/authStoreProvider";
 import { useConversationStore } from "@/providers/conversationStoreProvider";
-import { DialogProps, SystemRoles } from "@/types/chat";
+import { SystemRoles } from "@/types/chat";
 
 import RenderMessages from "./RenderMessages";
 import InitialChat from "./InitialChat";
@@ -23,8 +23,8 @@ import { systemPrompts } from "@/lib/util/constants";
 const localPort = "8000";
 const baseUrl =
   process.env.NODE_ENV !== "production"
-    ? `localhost:${localPort}`
-    : process.env.BACKEND_API;
+    ? `http://localhost:${localPort}`
+    : `https://${process.env.BACKEND_API}`;
 
 const Chat = () => {
   const [numberReload, setNumberReload] = useState(0);
@@ -44,7 +44,7 @@ const Chat = () => {
   const { user } = useAuthStore((state) => state);
   const { messages, setMessages, loading, reload, onSubmit, input, onChange } =
     useChat({
-      url: `http://${baseUrl}/api/chat/`,
+      url: `${baseUrl}/api/chat/`,
       headers: {
         Authorization: `Bearer ${user.accessToken}`,
       },

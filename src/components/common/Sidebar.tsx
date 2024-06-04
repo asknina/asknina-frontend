@@ -58,8 +58,7 @@ const Sidebar = ({}) => {
   return (
     <div className="p-2 w-1/5 flex flex-col text-primaryPurple h-screen login-background">
       <div className="flex-1">
-        <div className="flex flex-col my-2 space-y-2">
-          {/* Nina discovery page */}
+        <div className="pb-2">
           <AskNinaButton
             label={"Home"}
             onClick={() => {
@@ -71,11 +70,14 @@ const Sidebar = ({}) => {
             variant={Variants.withoutBorder}
           />
           <AskNinaButton
-            label={"New chat"}
+            label={"Start a new conversation"}
             onClick={() => handleCreateNewChat()}
             otherStyles="w-full"
             icon={<IoMdAdd />}
           />
+        </div>
+        <div className="flex flex-col my-2 space-y-2 flex-1 overflow-y-auto">
+          {/* Nina discovery page */}
           {conversations?.length
             ? conversations.map((chat, index) => (
                 <ChatSidebarButton
