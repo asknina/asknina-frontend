@@ -26,7 +26,6 @@ const SystemResponse = ({
     (state) => state
   );
 
-  const [showResponseBtns, setShowResponseBtns] = useState(true);
   const [response, setResponse] = useState(message.response);
 
   const handleResponse = (response: boolean) => {
@@ -45,8 +44,6 @@ const SystemResponse = ({
           />
         </div>
         <div className="flex-1 break-words space-y-2">
-          {/* TODO: decide between these */}
-          {/* <div>{message.content}</div> */}
           <Remark>{message.content}</Remark>
         </div>
         <div className="w-16 flex flex-row items-center justify-around self-end">
