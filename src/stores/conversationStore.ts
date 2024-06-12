@@ -1,22 +1,24 @@
 import { createStore } from 'zustand/vanilla'
-import { DialogProps, Conversation } from "@/types/chat";
+import { Conversation, MessageObj } from "@/types/chat";
 import { createTitle } from '@/lib/util/utilities';
-import { createNewConversation, deleteConversation, getConversation, getConversationMessages, respondToChat, saveConversationDetails, updateConversationMessages } from '@/lib/firebase/data/chats';
+import { createNewConversation, deleteConversation, getConversation, getConversationMessages, respondToChat, saveConversationDetails, updateConversationMessage } from '@/lib/firebase/data/chats';
 import { MessageType } from '@axflow/models/shared';
 
 export type ConversationState = {
     conversations: Conversation[]
     currentConversation: Conversation
-    currentConvoMessages: DialogProps[]
+    currentConvoMessages: MessageObj[]
 }
+
 
 export type ConversationActions = {
     createConversation: (userId: string, messages: any[], promptQuestion?: string) => Promise<void>
     setConversations: (conversations: Conversation[]) => void
     setCurrentConversation: (conversationId: string) => Promise<void>
-    respondToMessage: (conversationId: string, messageId: string, response: boolean) => Promise<void>
+    setCurrentConversationMessages: (messages: MessageObj[]) => void
+    respondToMessage: (messageId: string, response: boolean, convoIndex: number) => Promise<void>
     updateConversation: (conversationId: string, conversationDetails: Partial<Conversation>) => void
-    updateConversationMessages: (conversationId: string, messages: MessageType[]) => void
+    updateConversationMessage: (conversationId: string, message: MessageType, index?: number) => void
     deleteConversation: (userId: string, conversationId: string) => void
 }
 
@@ -33,7 +35,7 @@ export const createConversationStore = (
 ) => {
     return createStore<ConversationStore>()((set, get) => ({
         ...initState,
-        setConversations: (conversations) => set(() => ({ conversations: conversations })),
+        setConversations: (conversations) => set(() => ({ conversations })),
         setCurrentConversation: async (conversationId) => {
             if (conversationId) {
                 const conversation = await getConversation(conversationId)
@@ -49,56 +51,46 @@ export const createConversationStore = (
                 }))
             }
         },
+        setCurrentConversationMessages: (messages: MessageObj[]) => {
+            set(() => ({
+                currentConvoMessages: messages
+            }))
+        },
         createConversation: async (userId, messages, promptQuestion = "") => {
-            const title = promptQuestion ? promptQuestion : createTitle()
-            await createNewConversation(userId, title, messages, promptQuestion).then(async (convoId) => {
-                const convo = await getConversation(convoId)
-                set((state) => ({ conversations: [...state.conversations, convo], currentConversation: convo }))
-                get().setCurrentConversation(convo.conversationId)
-            })
+            const title = promptQuestion || createTitle()
+            const convoId = await createNewConversation(userId, title, messages, promptQuestion);
+            const convo = await getConversation(convoId);
+            set((state) => ({
+                conversations: [...state.conversations, convo],
+                currentConversation: convo
+            }));
+            await get().setCurrentConversation(convo.conversationId);
         },
         deleteConversation: async (userId: string, conversationId: string) => {
             await deleteConversation(userId, conversationId)
             const newConvos = get().conversations.filter(convo => convo.conversationId !== conversationId)
-            get().setConversations(newConvos)
+            set({ conversations: newConvos });
         },
-        respondToMessage: async (conversationId: string, messageId: string, response: boolean) => {
-            await respondToChat(conversationId, messageId, response).then((updatedMessage) => {
-                const updateMessageIdx = get().currentConvoMessages.findIndex(msg => msg.id == messageId)
-                const updatedConvoMessages = [...get().currentConvoMessages]
-                updatedConvoMessages[updateMessageIdx] = updatedMessage
-                set({
-                    currentConvoMessages: updatedConvoMessages
-                })
-            })
+        respondToMessage: async (messageId: string, response: boolean, convoIndex: number) => {
+            const updatedMessage = await respondToChat(messageId, response)
         },
         updateConversation: async (conversationId: string, convoDetails: Partial<Conversation>) => {
-            await saveConversationDetails(conversationId, convoDetails).then(() => {
-                const updateIndex = get().conversations.findIndex(convo => convo.conversationId == conversationId)
-                const updatedConvos = [...get().conversations]
-                updatedConvos[updateIndex] = { ...updatedConvos[updateIndex], ...convoDetails }
-                get().setConversations(updatedConvos)
-                if (get().currentConversation.conversationId == conversationId) {
-                    set((state) => ({ currentConversation: { ...state.currentConversation, ...convoDetails } }))
-                }
-
-            })
-        },
-        updateConversationMessages: async (conversationId: string, messages: MessageType[]) => {
-            return await updateConversationMessages(
-                conversationId,
-                messages
-            ).then(async () => {
-                const newMessagesForConvo = [
-                    ...(get().currentConversation?.messages || []),
-                    ...(messages.map(msg => msg.id)),
-                ];
-                // update Conversation
-
-                get().updateConversation(conversationId, {
-                    messages: newMessagesForConvo,
-                });
+            await saveConversationDetails(conversationId, convoDetails)
+            set((state) => {
+                const updatedConversations = state.conversations.map(convo =>
+                    convo.conversationId === conversationId ? { ...convo, ...convoDetails } : convo
+                );
+                return { conversations: updatedConversations };
             });
+            if (get().currentConversation.conversationId === conversationId) {
+                set((state) => ({
+                    currentConversation: { ...state.currentConversation, ...convoDetails }
+                }));
+            }
+        }
+        ,
+        updateConversationMessage: async (conversationId: string, message: MessageType, index?: number) => {
+            await updateConversationMessage(conversationId, message, index);
         }
     }))
 }

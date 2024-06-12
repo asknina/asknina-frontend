@@ -2,12 +2,15 @@
 import React, { useEffect, useState } from "react";
 import Button from "@/components/common/Button";
 import validator from "validator";
+import { sendResetPasswordEmail } from "@/lib/firebase/auth";
+import { useAuthStore } from "@/providers/authStoreProvider";
 
 interface SignInEmailProps {
   handleSignIn: Function;
 }
 
 const SignInEmail = ({ handleSignIn }: SignInEmailProps) => {
+  const { loginError } = useAuthStore((state) => state);
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
@@ -25,6 +28,26 @@ const SignInEmail = ({ handleSignIn }: SignInEmailProps) => {
       }
     }
   };
+
+  const handlePasswordReset = async (e: any) => {
+    e.preventDefault();
+    if (email) {
+      if (validator.isEmail(email)) {
+        await sendResetPasswordEmail(email);
+        setError(
+          "If you input a valid email a password reset email will be sent to you"
+        );
+        setShowErrorMessage(true);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (loginError) {
+      setError(loginError);
+      setShowErrorMessage(true);
+    }
+  }, [loginError]);
 
   useEffect(() => {
     if (error) {
@@ -57,7 +80,12 @@ const SignInEmail = ({ handleSignIn }: SignInEmailProps) => {
               onChange={(e) => setPassword(e.target.value)}
             />
             {/* TODO: Forgot password */}
-            <div className="mt-2 text-xs text-left">Forgot password?</div>
+            <button
+              className="mt-2 text-xs text-left"
+              onClick={handlePasswordReset}
+            >
+              Forgot password?
+            </button>
           </div>
         </div>
         {showErrorMessage && <div className="text-red-500">{error}</div>}

@@ -7,6 +7,7 @@ import {
   getIdToken,
   getAuth,
   UserCredential,
+  sendPasswordResetEmail
 } from "firebase/auth";
 
 import { auth } from "@/lib/firebase/firebase";
@@ -46,4 +47,8 @@ export async function getFirebaseToken() {
 
 export async function getFirebaseAuth() {
   return await getAuth()
+}
+
+export async function sendResetPasswordEmail(email: string) {
+  return await sendPasswordResetEmail(auth, email)
 }

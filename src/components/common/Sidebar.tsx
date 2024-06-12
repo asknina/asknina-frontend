@@ -8,10 +8,14 @@ import LogoutButton from "../sidebar/LogoutButton";
 
 import { IoMdAdd, IoIosHome } from "react-icons/io";
 import { useRouter } from "next/navigation";
-import { DialogProps, Conversation } from "@/types/chat";
+import { DialogProps, Conversation, SystemRoles } from "@/types/chat";
 import { getAllUserConversations } from "@/lib/firebase/data/chats";
 import { useAuthStore } from "@/providers/authStoreProvider";
 import { useConversationStore } from "@/providers/conversationStoreProvider";
+import ProfileButton from "../sidebar/ProfileButton";
+import { getRandomInteger } from "@/lib/util/utilities";
+import { systemPrompts } from "@/lib/util/constants";
+import { createMessage } from "@axflow/models/shared";
 
 const Sidebar = ({}) => {
   const { isLoggedIn, user } = useAuthStore((state) => state);
@@ -38,7 +42,13 @@ const Sidebar = ({}) => {
   };
 
   const handleCreateNewChat = async () => {
-    const conversation = await createConversation(user.uid, []);
+    const initialPromptRandomIdx = getRandomInteger(systemPrompts.length);
+    const prompt = systemPrompts[initialPromptRandomIdx];
+    const message = createMessage({
+      content: prompt,
+      role: SystemRoles.SYSTEM,
+    });
+    const conversation = await createConversation(user.uid, [message]);
     // setCurrentChat as the newly created conversation
     router.push("/chat");
   };
@@ -95,6 +105,7 @@ const Sidebar = ({}) => {
         {isLoggedIn ? (
           <>
             {/* <ClearConversationsButton /> */}
+            <ProfileButton />
             <HelpButton />
           </>
         ) : null}

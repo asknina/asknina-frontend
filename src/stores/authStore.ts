@@ -1,5 +1,5 @@
 import { createUser, signInWithEmail, signInWithGoogle, signOut } from '@/lib/firebase/auth'
-import addUser, { fetchUserData } from '@/lib/firebase/data/users'
+import addUser, { fetchUserData, getUserProfile, updateUserProfile } from '@/lib/firebase/data/users'
 import { createStore } from 'zustand/vanilla'
 
 interface User {
@@ -14,16 +14,25 @@ export type AuthState = {
     isLoggedIn: boolean
     isLoadingAuth: boolean
     loginError: string
+    profile: ProfileDetails
+}
+
+export interface ProfileDetails {
+    username: string
+    dateOfBirth: string
+    pronouns: string
 }
 
 export type AuthActions = {
     setIsLoadingAuth: (value: boolean) => void
     setUser: (user: User) => void
     setIsLoggedIn: (value: boolean) => void
-    loginWithEmail: (email: string, password: string) => Promise<void>
+    loginWithEmail: (email: string, password: string) => Promise<boolean>
     loginWithGoogle: () => Promise<void>
     createUser: (email: string, password: string, username: string, dateOfBirth: string, pronouns: string) => Promise<void>
     logout: () => void
+    getUserProfile: (uid: string) => void
+    updateUserProfile: (userInfo: Partial<ProfileDetails>) => void
 }
 
 export type AuthStore = AuthState & AuthActions
@@ -37,19 +46,24 @@ export const defaultInitState: AuthState = {
     },
     isLoggedIn: false,
     isLoadingAuth: true,
-    loginError: ""
+    loginError: "",
+    profile: {
+        username: "",
+        dateOfBirth: "",
+        pronouns: ""
+    }
 }
 
 export const createAuthStore = (
     initState: AuthState = defaultInitState,
 ) => {
-    return createStore<AuthStore>()((set) => ({
+    return createStore<AuthStore>()((set, get) => ({
         ...initState,
         setIsLoadingAuth: (value) => set((state) => ({ isLoadingAuth: value })),
         setUser: (user) => set(() => ({ user: user })),
         setIsLoggedIn: (value) => set(() => ({ isLoggedIn: value })),
         loginWithEmail: async (email, password) => {
-            await signInWithEmail(email, password).then(async (authUser) => {
+            return await signInWithEmail(email, password).then(async (authUser) => {
                 if (authUser) {
                     const fetchedUser = await fetchUserData(authUser)
                     set({
@@ -60,8 +74,10 @@ export const createAuthStore = (
                         }
                     })
                 }
+                return true
             }).catch((e) => {
                 set({ loginError: e.message })
+                return false
             })
         },
         loginWithGoogle: async () => {
@@ -107,6 +123,14 @@ export const createAuthStore = (
             await signOut().then(() => {
                 set(defaultInitState)
             })
+        },
+        getUserProfile: async () => {
+            const userProfile = await getUserProfile(get().user.uid)
+            set({ profile: userProfile })
+        },
+        updateUserProfile: async (userInfo) => {
+            const updatedUser = await updateUserProfile(get().user.uid, userInfo)
+            set({ profile: updatedUser })
         }
     }))
 }

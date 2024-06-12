@@ -1,11 +1,14 @@
 "use client";
-import React, { MouseEventHandler, useState } from "react";
+import React, { MouseEventHandler, useState, useRef } from "react";
 import { MdOutlineChatBubbleOutline } from "react-icons/md";
 import { FiEdit3, FiSave } from "react-icons/fi";
 import { HiOutlineTrash } from "react-icons/hi";
 import { IoClose } from "react-icons/io5";
 import { useConversationStore } from "@/providers/conversationStoreProvider";
 import { Conversation } from "@/types/chat";
+
+import useOnClickOutside from "use-onclickoutside";
+
 interface ChatSidebarButtonProps {
   label: string;
   conversation: Conversation;
@@ -18,6 +21,8 @@ const ChatSidebarButton = ({
   onClick,
   onDelete,
 }: ChatSidebarButtonProps) => {
+  const ref = useRef(null);
+
   const { currentConversation, updateConversation } = useConversationStore(
     (state) => state
   );
@@ -39,6 +44,9 @@ const ChatSidebarButton = ({
       setEditTitle(false);
     }
   };
+
+  useOnClickOutside(ref, saveNewTitle);
+
   return (
     <div
       className={`inline-flex w-full p-2 text-sm flex-row justify-between  shadow-sm rounded-sm overflow-hidden ${
@@ -52,6 +60,7 @@ const ChatSidebarButton = ({
             onChange={(e) => setNewTitle(e.target.value)}
             autoFocus
             className="text-primaryPurple px-1 py-0.5 flex-1"
+            ref={ref}
           />
           <div className="space-x-2 inline-flex items-center ml-2">
             <button
@@ -76,13 +85,15 @@ const ChatSidebarButton = ({
       ) : (
         <>
           <div
-            className="space-x-2 inline-flex items-center hover:cursor-pointer truncate text-wrap flex-1 w-48 h-6 "
+            className="space-x-2 inline-flex items-center hover:cursor-pointer w-full md:w-48 h-6 "
             onClick={() => onClick()}
           >
             <span>
               <MdOutlineChatBubbleOutline />
             </span>
-            <span className="self-start">{label?.toString()}</span>
+            <span className="self-start truncate w-40">
+              {label?.toString()}
+            </span>
           </div>
           <div className="space-x-2 inline-flex items-center">
             <button onClick={handleEditClick} className="hover:cursor-pointer">

@@ -1,3 +1,5 @@
+import { MessageObj } from "@/types/chat"
+
 export function createTitle() {
     const date = new Date()
     const month: string = Months[date.getMonth()]
@@ -25,4 +27,11 @@ const Months = [
 
 export function getRandomInteger(max: number) {
     return Math.floor(Math.random() * max)
+}
+
+export function mapCurrentConvoMsgToMessage(currentConvo: MessageObj[]) {
+    return currentConvo.map(msgObj => {
+        const keys = Object.keys(msgObj).map(Number);
+        return keys.length ? msgObj[Math.max(...keys).toString()] : msgObj[0];
+    });
 }

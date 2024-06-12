@@ -16,6 +16,7 @@ import {
 } from "@/stores/authStore";
 import { onAuthStateChanged } from "@/lib/firebase/auth";
 import { useRouter } from "next/navigation";
+import { getUserProfile } from "@/lib/firebase/data/users";
 
 export type AuthStoreApi = ReturnType<typeof createAuthStore>;
 

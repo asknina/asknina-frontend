@@ -1,4 +1,4 @@
-import { doc, setDoc, getDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { UserCredential } from "firebase/auth";
 
@@ -48,3 +48,15 @@ export const fetchUserData = async (userCredential: UserCredential): Promise<any
         return e;
     }
 };
+
+export const getUserProfile = async (userId: string): Promise<any> => {
+    const userDocRef = doc(db, "users", userId);
+    const docSnap = await getDoc(userDocRef);
+    return docSnap.data()
+}
+
+export const updateUserProfile = async (userId: string, userInfo: Partial<User>): Promise<any> => {
+    return await updateDoc(doc(db, "users", userId), userInfo).then(async () => {
+        return await getUserProfile(userId)
+    });
+}

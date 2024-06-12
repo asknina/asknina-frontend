@@ -28,9 +28,9 @@ const SystemResponse = ({
 
   const [response, setResponse] = useState(message.response);
 
-  const handleResponse = (response: boolean) => {
+  const handleResponse = (response: boolean, index: number) => {
     setResponse({ liked: response, timeResponded: new Date().toDateString() });
-    respondToMessage(currentConversation.conversationId, message.id, response);
+    respondToMessage(message.id, response, index);
   };
 
   return (
@@ -59,10 +59,10 @@ const SystemResponse = ({
             )
           ) : !loading ? (
             <>
-              <button className="" onClick={() => handleResponse(true)}>
+              <button className="" onClick={() => handleResponse(true, 1)}>
                 <HiOutlineHandThumbUp />
               </button>
-              <button className="" onClick={() => handleResponse(false)}>
+              <button className="" onClick={() => handleResponse(false, 1)}>
                 <HiOutlineHandThumbDown />
               </button>
             </>

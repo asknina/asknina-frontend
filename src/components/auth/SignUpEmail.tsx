@@ -112,7 +112,6 @@ const SignUpEmail = ({}: SignUpEmailProps) => {
     await createUser(email, password, username, dateOfBirth.value, pronouns)
       .then(() => router.push("/home"))
       .catch((e) => {
-        console.log({ e });
         setError(e);
       });
   };

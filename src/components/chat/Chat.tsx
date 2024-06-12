@@ -14,11 +14,13 @@ import { useRouter } from "next/navigation";
 import { useChatStore } from "@/providers/chatStoreProvider";
 import { useAuthStore } from "@/providers/authStoreProvider";
 import { useConversationStore } from "@/providers/conversationStoreProvider";
-import { SystemRoles } from "@/types/chat";
+import { MessageObj, SystemRoles } from "@/types/chat";
 
 import RenderMessages from "./RenderMessages";
 import InitialChat from "./InitialChat";
 import { systemPrompts } from "@/lib/util/constants";
+import { addMessageToConversation } from "@/lib/firebase/data/chats";
+import { mapCurrentConvoMsgToMessage } from "@/lib/util/utilities";
 
 const localPort = "8000";
 const baseUrl =
@@ -34,12 +36,8 @@ const Chat = () => {
     (state) => state
   );
 
-  const {
-    currentConversation,
-    currentConvoMessages,
-    setCurrentConversation,
-    updateConversationMessages,
-  } = useConversationStore((state) => state);
+  const { currentConversation, currentConvoMessages, setCurrentConversation } =
+    useConversationStore((state) => state);
 
   const { user } = useAuthStore((state) => state);
   const { messages, setMessages, loading, reload, onSubmit, input, onChange } =
@@ -47,12 +45,6 @@ const Chat = () => {
       url: `${baseUrl}/api/chat/`,
       headers: {
         Authorization: `Bearer ${user.accessToken}`,
-      },
-      onNewMessage: async (message: MessageType) => {
-        return await updateConversationMessages(
-          currentConversation.conversationId,
-          [message]
-        );
       },
       onError: (error) => console.log(error),
     });
@@ -64,11 +56,57 @@ const Chat = () => {
   };
 
   useEffect(() => {
-    const sortedMessages = [...currentConvoMessages].sort((msgA, msgB) =>
-      msgB.created > msgA.created ? -1 : 1
-    );
-    setMessages(sortedMessages);
+    if (currentConvoMessages) {
+      const msgArray = mapCurrentConvoMsgToMessage(currentConvoMessages);
+      const savedMessages = msgArray.map((msg) => {
+        return { ...msg, saved: true };
+      });
+      setMessages(savedMessages);
+    }
   }, [currentConvoMessages]);
+
+  useEffect(() => {
+    if (initialQuestion?.question?.length && user.accessToken) {
+      onSubmit();
+
+      return function cleanup() {
+        setInitialQuestion({ promptNumber: 0, question: "" });
+      };
+    }
+  }, [initialQuestion, setInitialQuestion, user]);
+
+  useEffect(() => {
+    if (!loading) {
+      if (messages?.length) {
+        // @ts-ignore
+        addUnsavedMessages(messages);
+      }
+    }
+  }, [messages, loading]);
+
+  const addUnsavedMessages = async (
+    messages: (MessageType & { saved?: boolean })[]
+  ) => {
+    await messages.reduce(
+      async (
+        previousPromise,
+        message: MessageType & { saved?: boolean },
+        index: number
+      ) => {
+        await previousPromise;
+        if (!message.saved) {
+          await addMessageToConversation(
+            currentConversation.conversationId,
+            message,
+            index
+          );
+          // @ts-ignore message includes the saved field
+          message.saved = true;
+        }
+      },
+      Promise.resolve()
+    );
+  };
 
   useEffect(() => {
     scrollToBottom();
@@ -86,28 +124,8 @@ const Chat = () => {
     }
   }, [messages]);
 
-  useEffect(() => {
-    if (initialQuestion?.question?.length && user.accessToken) {
-      const newMessages = [
-        createMessage({
-          role: SystemRoles.SYSTEM,
-          content: systemPrompts[initialQuestion.promptNumber],
-        }),
-        createMessage({
-          role: SystemRoles.USER,
-          content: initialQuestion.question,
-        }),
-      ];
-      setMessages(newMessages);
-      onSubmit();
-
-      return function cleanup() {
-        setInitialQuestion({ promptNumber: 0, question: "" });
-      };
-    }
-  }, [initialQuestion, setInitialQuestion, user]);
-
   const regenerate = () => {
+    // TODO: Fix this
     setNumberReload(numberReload + 1);
     const lastSystemMessageIndex = messages.findLastIndex(
       (message) => message.role == SystemRoles.ASSISTANT

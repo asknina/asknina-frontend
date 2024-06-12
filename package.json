@@ -24,6 +24,7 @@
     "react-remark": "^2.1.0",
     "react-spinners": "^0.13.8",
     "request": "^2.88.2",
+    "use-onclickoutside": "^0.4.1",
     "validator": "^13.12.0",
     "zustand": "^4.5.2"
   },

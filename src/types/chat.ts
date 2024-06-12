@@ -1,3 +1,4 @@
+import { MessageType } from "@axflow/models/shared";
 
 export interface DialogProps {
     role: SystemRoles;
@@ -15,8 +16,16 @@ export enum SystemRoles {
 export interface Conversation {
     conversationId: string;
     title: string;
-    messages: string[]
+    messages: MessageInfo[];
     promptQuestion?: string;
+}
+
+export interface MessageInfo {
+    [key: string]: string
+}
+
+export interface MessageObj {
+    [key: string]: MessageType
 }
 
 export interface AdditionalMessageDetails {
