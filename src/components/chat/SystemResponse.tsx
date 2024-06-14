@@ -5,32 +5,29 @@ import AskNinaIcon from "@public/logos/antenna-90x90.png";
 import Image from "next/image";
 import { Remark } from "react-remark";
 
-import { HiOutlineHandThumbDown, HiOutlineHandThumbUp } from "react-icons/hi2";
+import {
+  BsFillHandThumbsUpFill,
+  BsHandThumbsUp,
+  BsHandThumbsDown,
+  BsHandThumbsDownFill,
+} from "react-icons/bs";
 import { AdditionalMessageDetails } from "@/types/chat";
 import { useConversationStore } from "@/providers/conversationStoreProvider";
 
-import { AiFillLike, AiFillDislike } from "react-icons/ai";
 interface SystemResponseProps {
   message: MessageType & AdditionalMessageDetails;
   isCurrentChat: boolean;
   loading: boolean;
   isResponded: boolean;
 }
-const SystemResponse = ({
-  message,
-  isCurrentChat,
-  loading,
-  isResponded,
-}: SystemResponseProps) => {
-  const { respondToMessage, currentConversation } = useConversationStore(
-    (state) => state
-  );
+const SystemResponse = ({ message }: SystemResponseProps) => {
+  const { respondToMessage } = useConversationStore((state) => state);
 
   const [response, setResponse] = useState(message.response);
 
-  const handleResponse = (response: boolean, index: number) => {
+  const handleResponse = (response: boolean) => {
     setResponse({ liked: response, timeResponded: new Date().toDateString() });
-    respondToMessage(message.id, response, index);
+    respondToMessage(message.id, response);
   };
 
   return (
@@ -47,27 +44,26 @@ const SystemResponse = ({
           <Remark>{message.content}</Remark>
         </div>
         <div className="w-16 flex flex-row items-center justify-around self-end">
-          {response?.timeResponded ? (
-            response.liked ? (
-              <div>
-                <AiFillLike />
-              </div>
-            ) : (
-              <div>
-                <AiFillDislike />
-              </div>
-            )
-          ) : !loading ? (
-            <>
-              <button className="" onClick={() => handleResponse(true, 1)}>
-                <HiOutlineHandThumbUp />
-              </button>
-              <button className="" onClick={() => handleResponse(false, 1)}>
-                <HiOutlineHandThumbDown />
-              </button>
-            </>
+          {response?.liked ? (
+            <div>
+              <BsFillHandThumbsUpFill />
+            </div>
           ) : (
-            <div />
+            <button className="" onClick={() => handleResponse(true)}>
+              <BsHandThumbsUp />
+            </button>
+          )}
+          {response?.liked ? (
+            <button
+              className="scale-x-[-1]"
+              onClick={() => handleResponse(false)}
+            >
+              <BsHandThumbsDown />
+            </button>
+          ) : (
+            <div className="scale-x-[-1]">
+              <BsHandThumbsDownFill />
+            </div>
           )}
         </div>
       </div>

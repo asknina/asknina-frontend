@@ -16,7 +16,7 @@ export type ConversationActions = {
     setConversations: (conversations: Conversation[]) => void
     setCurrentConversation: (conversationId: string) => Promise<void>
     setCurrentConversationMessages: (messages: MessageObj[]) => void
-    respondToMessage: (messageId: string, response: boolean, convoIndex: number) => Promise<void>
+    respondToMessage: (messageId: string, response: boolean) => Promise<void>
     updateConversation: (conversationId: string, conversationDetails: Partial<Conversation>) => void
     updateConversationMessage: (conversationId: string, message: MessageType, index?: number) => void
     deleteConversation: (userId: string, conversationId: string) => void
@@ -71,8 +71,8 @@ export const createConversationStore = (
             const newConvos = get().conversations.filter(convo => convo.conversationId !== conversationId)
             set({ conversations: newConvos });
         },
-        respondToMessage: async (messageId: string, response: boolean, convoIndex: number) => {
-            const updatedMessage = await respondToChat(messageId, response)
+        respondToMessage: async (messageId: string, response: boolean) => {
+            await respondToChat(messageId, response)
         },
         updateConversation: async (conversationId: string, convoDetails: Partial<Conversation>) => {
             await saveConversationDetails(conversationId, convoDetails)
