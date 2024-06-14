@@ -11,7 +11,7 @@ const RegenerateResponseButton = ({
 }: RegenerateResponseButtonProps) => {
   return (
     <AskNinaButton
-      label={"Regenerate response"}
+      label={"Regenerate Last Response"}
       onClick={() => {
         reload();
       }}

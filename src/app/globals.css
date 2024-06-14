@@ -41,9 +41,14 @@ a {
 
 ol {
   list-style-type: decimal;
-  list-style-position: inside;
+  list-style-position: outside;
+  margin-left: 2rem;
 }
 
 ol > li {
   margin-top: 0.25rem;
+}
+
+li > p {
+  /* background-color: blueviolet; */
 }

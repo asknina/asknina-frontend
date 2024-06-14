@@ -11,9 +11,9 @@ interface QuestionQueryProps {
 const QuestionQuery = ({ onSubmit, input, onChange }: QuestionQueryProps) => {
   return (
     <form onSubmit={onSubmit} className="w-5/6">
-      <div className="rounded-sm w-full p-2 border-2 border-grey-300 bg-grey-100 inline-flex items-center space-x-2">
+      <div className="rounded-lg w-full p-2 border-2 border-grey-300 bg-grey-100 inline-flex items-center space-x-2">
         <input
-          className="bg-grey-100 flex-1 p-1"
+          className="bg-grey-100 flex-1 p-1 focus:outline-none"
           placeholder="Enter your question here"
           value={input || ""}
           onChange={onChange}

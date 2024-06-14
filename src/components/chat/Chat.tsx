@@ -5,7 +5,7 @@ import Image from "next/image";
 import EnterQuery from "../explore/EnterQuery";
 
 import { useChat } from "@axflow/models/react";
-import { MessageType, createMessage } from "@axflow/models/shared";
+import { MessageType } from "@axflow/models/shared";
 
 import PulseLoader from "react-spinners/PulseLoader";
 import { IoClose } from "react-icons/io5";
@@ -18,7 +18,6 @@ import { MessageObj, SystemRoles } from "@/types/chat";
 
 import RenderMessages from "./RenderMessages";
 import InitialChat from "./InitialChat";
-import { systemPrompts } from "@/lib/util/constants";
 import { addMessageToConversation } from "@/lib/firebase/data/chats";
 import { mapCurrentConvoMsgToMessage } from "@/lib/util/utilities";
 
@@ -130,7 +129,10 @@ const Chat = () => {
     const lastSystemMessageIndex = messages.findLastIndex(
       (message) => message.role == SystemRoles.ASSISTANT
     );
-    setMessages(messages.slice(0, lastSystemMessageIndex));
+    setMessages([
+      ...messages.slice(0, lastSystemMessageIndex),
+      ...messages.slice(lastSystemMessageIndex + 1, messages.length),
+    ]);
     reload();
   };
   const router = useRouter();
@@ -175,7 +177,7 @@ const Chat = () => {
           input={input}
           onChange={onChange}
           reload={regenerate}
-          showReload={false}
+          showReload={true}
         />
       </div>
     </div>

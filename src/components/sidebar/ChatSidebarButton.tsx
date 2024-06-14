@@ -30,7 +30,7 @@ const ChatSidebarButton = ({
     (currentConversation && currentConversation?.conversationId) ==
     conversation.conversationId;
   const [editTitle, setEditTitle] = useState(false);
-  const [newTitle, setNewTitle] = useState("");
+  const [newTitle, setNewTitle] = useState(label);
 
   const handleEditClick = () => {
     setEditTitle(!editTitle);
@@ -83,19 +83,14 @@ const ChatSidebarButton = ({
           </div>
         </div>
       ) : (
-        <>
-          <div
-            className="space-x-2 inline-flex items-center hover:cursor-pointer w-full md:w-48 h-6 "
-            onClick={() => onClick()}
-          >
-            <span>
-              <MdOutlineChatBubbleOutline />
-            </span>
-            <span className="self-start truncate w-40">
-              {label?.toString()}
-            </span>
-          </div>
-          <div className="space-x-2 inline-flex items-center">
+        <div
+          className="space-x-2 inline-flex items-center hover:cursor-pointer w-full h-6 "
+          onClick={() => onClick()}
+        >
+          <span className="self-start truncate flex-1">
+            {label?.toString()}
+          </span>
+          <div className="space-x-2 inline-flex items-center w-1/6">
             <button onClick={handleEditClick} className="hover:cursor-pointer">
               <span>
                 <FiEdit3 />
@@ -107,7 +102,7 @@ const ChatSidebarButton = ({
               </span>
             ) : null}
           </div>
-        </>
+        </div>
       )}
     </div>
   );
