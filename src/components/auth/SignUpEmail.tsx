@@ -87,12 +87,14 @@ const SignUpEmail = ({}: SignUpEmailProps) => {
       onChange: (e: any) => setEmail(e.target.value),
       label: "Email:",
       type: "email",
+      autoComplete: "email",
     },
     {
       value: username,
       onChange: (e: any) => setUsername(e.target.value),
       label: "Username:",
       type: "text",
+      autoComplete: "username",
     },
     {
       value: password,
@@ -106,6 +108,7 @@ const SignUpEmail = ({}: SignUpEmailProps) => {
       onChange: (e: any) => setPronouns(e.target.value),
       label: "Pronouns:",
       type: "text",
+      autoComplete: "",
     },
   ];
 

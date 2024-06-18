@@ -68,6 +68,7 @@ const SignInEmail = ({ handleSignIn }: SignInEmailProps) => {
             value={email}
             type="email"
             onChange={(e) => setEmail(e.target.value)}
+            autoComplete="email"
           />
         </div>
         <div className="flex flex-row w-full mb-2">

@@ -43,31 +43,34 @@ export async function getConversationMessages(
     const convo = await getConversation(conversationId);
 
 
-    const allMessages: MessageInfo[] = convo.messages;
+    const allMessages: MessageInfo[] = convo?.messages;
     const allMessageContent: Record<string, any> = {};
 
     // messages = [{0: test, 1: uid, 2: uid}, {0: test}]
     // Extract message IDs from JSON strings
-    const allMessageIds: string[] = allMessages.flatMap((msgUidObj: MessageInfo) => Object.values(msgUidObj));
+    const allMessageIds: string[] = allMessages?.flatMap((msgUidObj: MessageInfo) => Object.values(msgUidObj));
 
-    // Fetch all messages and populate allMessageContent
-    await Promise.all(allMessageIds.map(async (msgId) => {
-        const message = await getMessage(msgId);
-        allMessageContent[msgId] = message;
-    }));
+    if (allMessageIds) {
+        // Fetch all messages and populate allMessageContent
+        await Promise.all(allMessageIds.map(async (msgId) => {
+            const message = await getMessage(msgId);
+            allMessageContent[msgId] = message;
+        }));
 
-    // Process and map messages with their content
-    const mapObj = allMessages.map(messageArrObj => {
-        // replace the uid with the actual object
-        const newObj = messageArrObj;
-        Object.keys(messageArrObj).forEach((messageIndex: string) => {
-            const fetched = allMessageContent[messageArrObj[parseInt(messageIndex)]];
-            newObj[parseInt(messageIndex)] = fetched;
+        // Process and map messages with their content
+        const mapObj = allMessages.map(messageArrObj => {
+            // replace the uid with the actual object
+            const newObj = messageArrObj;
+            Object.keys(messageArrObj)?.forEach((messageIndex: string) => {
+                const fetched = allMessageContent[messageArrObj[parseInt(messageIndex)]];
+                newObj[parseInt(messageIndex)] = fetched;
+            });
+            return newObj;
         });
-        return newObj;
-    });
-    return mapObj;
-
+        return mapObj;
+    } else {
+        return []
+    }
 }
 
 export async function getMessage(
@@ -211,6 +214,7 @@ export async function respondToChat(
 //                 // 
 //                 const newMessagesObj = sortedMessages.map(message => { return { 0: message.id } })
 //                 await saveConversationDetails(document.id, { messages: newMessagesObj })
+//                 // delete the messages subcollection too
 //             }
 //         }
 //     });

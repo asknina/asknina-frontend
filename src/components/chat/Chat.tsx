@@ -1,25 +1,23 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import AskNinaIcon from "@public/logos/antenna-90x90.png";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { IoClose } from "react-icons/io5";
+import PulseLoader from "react-spinners/PulseLoader";
+
+import AskNinaIcon from "@public/logos/antenna-90x90.png";
 import EnterQuery from "../explore/EnterQuery";
+import RenderMessages from "./RenderMessages";
+import InitialChat from "./InitialChat";
 
 import { useChat } from "@axflow/models/react";
 import { MessageType } from "@axflow/models/shared";
-
-import PulseLoader from "react-spinners/PulseLoader";
-import { IoClose } from "react-icons/io5";
-import { useRouter } from "next/navigation";
-
 import { useChatStore } from "@/providers/chatStoreProvider";
 import { useAuthStore } from "@/providers/authStoreProvider";
 import { useConversationStore } from "@/providers/conversationStoreProvider";
-import { MessageObj, SystemRoles } from "@/types/chat";
-
-import RenderMessages from "./RenderMessages";
-import InitialChat from "./InitialChat";
 import { addMessageToConversation } from "@/lib/firebase/data/chats";
 import { mapCurrentConvoMsgToMessage } from "@/lib/util/utilities";
+import { SystemRoles } from "@/types/chat";
 
 const localPort = "8000";
 const baseUrl =
@@ -28,61 +26,72 @@ const baseUrl =
     : `https://${process.env.BACKEND_API}`;
 
 const Chat = () => {
+  const [cleanedMessages, setCleanedMessages] = useState<MessageType[]>([]);
   const [numberReload, setNumberReload] = useState(0);
-  const [cleanedMessages, setCleanedMessages] = useState<any[]>([]);
+
+  const messagesEndRef = useRef<null | HTMLDivElement>(null);
+  const router = useRouter();
 
   const { initialQuestion, setInitialQuestion } = useChatStore(
     (state) => state
   );
-
   const { currentConversation, currentConvoMessages, setCurrentConversation } =
     useConversationStore((state) => state);
-
   const { user } = useAuthStore((state) => state);
+
   const { messages, setMessages, loading, reload, onSubmit, input, onChange } =
     useChat({
       url: `${baseUrl}/api/chat/`,
       headers: {
         Authorization: `Bearer ${user.accessToken}`,
       },
-      onError: (error) => console.log(error),
+      onError: (error) => console.error(error),
       onNewMessage: () => scrollToBottom(),
     });
-
-  const messagesEndRef = useRef<null | HTMLDivElement>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  // Load initial conversation messages
   useEffect(() => {
     if (currentConvoMessages) {
-      const msgArray = mapCurrentConvoMsgToMessage(currentConvoMessages);
-      const savedMessages = msgArray.map((msg) => {
-        return { ...msg, saved: true };
-      });
+      const savedMessages = mapCurrentConvoMsgToMessage(
+        currentConvoMessages
+      ).map((msg) => ({
+        ...msg,
+        saved: true,
+      }));
       setMessages(savedMessages);
     }
-  }, [currentConvoMessages]);
+  }, [currentConvoMessages, setMessages]);
 
+  // Submit initial question if present
   useEffect(() => {
-    if (initialQuestion?.question?.length && user.accessToken) {
+    if (initialQuestion?.question && user.accessToken) {
       onSubmit();
-
-      return function cleanup() {
-        setInitialQuestion({ promptNumber: 0, question: "" });
-      };
+      return () => setInitialQuestion({ promptNumber: 0, question: "" });
     }
-  }, [initialQuestion, setInitialQuestion, user]);
+  }, [initialQuestion, setInitialQuestion, user, onSubmit]);
 
+  // Handle new messages and save unsaved ones
   useEffect(() => {
-    if (!loading) {
-      if (messages?.length) {
-        // @ts-ignore
-        addUnsavedMessages(messages);
-      }
+    if (!loading && messages.length) {
+      addUnsavedMessages(messages);
     }
   }, [messages, loading]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  useEffect(() => {
+    setCleanedMessages(
+      messages.filter(
+        (message) => message.role !== SystemRoles.SYSTEM && message.content
+      )
+    );
+  }, [messages]);
 
   const addUnsavedMessages = async (
     messages: (MessageType & { saved?: boolean })[]
@@ -100,7 +109,6 @@ const Chat = () => {
             message,
             index
           );
-          // @ts-ignore message includes the saved field
           message.saved = true;
         }
       },
@@ -108,35 +116,17 @@ const Chat = () => {
     );
   };
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
-  useEffect(() => {
-    if (messages?.length) {
-      setCleanedMessages(
-        messages.filter(
-          (message) => message.role !== SystemRoles.SYSTEM && !!message.content
-        )
-      );
-    } else {
-      setCleanedMessages([]);
-    }
-  }, [messages]);
-
   const regenerate = () => {
-    // TODO: Fix this
-    setNumberReload(numberReload + 1);
     const lastSystemMessageIndex = messages.findLastIndex(
-      (message) => message.role == SystemRoles.ASSISTANT
+      (message) => message.role === SystemRoles.ASSISTANT
     );
     setMessages([
       ...messages.slice(0, lastSystemMessageIndex),
-      ...messages.slice(lastSystemMessageIndex + 1, messages.length),
+      ...messages.slice(lastSystemMessageIndex + 1),
     ]);
+    setNumberReload((prev) => prev + 1);
     reload();
   };
-  const router = useRouter();
 
   const handleCloseButton = async () => {
     setCurrentConversation("");
@@ -163,12 +153,10 @@ const Chat = () => {
           <InitialChat />
           <RenderMessages loading={loading} messages={cleanedMessages} />
         </div>
-        {loading ? (
+        {loading && (
           <div className="p-8 flex items-center justify-center">
-            <PulseLoader color={"#423EEE"} size={12} />
+            <PulseLoader color="#423EEE" size={12} />
           </div>
-        ) : (
-          <div />
         )}
         <div ref={messagesEndRef} />
       </div>
@@ -178,7 +166,7 @@ const Chat = () => {
           input={input}
           onChange={onChange}
           reload={regenerate}
-          showReload={true}
+          showReload
         />
       </div>
     </div>

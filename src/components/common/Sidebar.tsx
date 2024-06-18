@@ -1,8 +1,7 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import AskNinaButton, { Variants } from "./Button";
 import ChatSidebarButton from "../sidebar/ChatSidebarButton";
-import ClearConversationsButton from "../sidebar/ClearConversationsButton";
 import HelpButton from "../sidebar/HelpButton";
 import LogoutButton from "../sidebar/LogoutButton";
 
@@ -28,6 +27,7 @@ const Sidebar = ({}) => {
     currentConversation,
   } = useConversationStore((state) => state);
   const router = useRouter();
+  const convosEndRef = useRef<null | HTMLDivElement>(null);
 
   useEffect(() => {
     if (user && user.uid) {
@@ -50,6 +50,7 @@ const Sidebar = ({}) => {
     });
     const conversation = await createConversation(user.uid, [message]);
     // setCurrentChat as the newly created conversation
+    scrollToBottom();
     router.push("/chat");
   };
 
@@ -59,10 +60,14 @@ const Sidebar = ({}) => {
   };
 
   const handleDeleteChat = (conversationId: string) => {
-    deleteConversation(user.uid, conversationId);
     if (currentConversation.conversationId == conversationId) {
       router.push("/home");
     }
+    deleteConversation(user.uid, conversationId);
+  };
+
+  const scrollToBottom = () => {
+    convosEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
@@ -98,6 +103,7 @@ const Sidebar = ({}) => {
               />
             ))
           : null}
+        <div ref={convosEndRef} />
       </div>
 
       <div className="flex flex-col space-y-2 p-2">
