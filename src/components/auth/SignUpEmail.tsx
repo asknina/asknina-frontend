@@ -98,7 +98,8 @@ const SignUpEmail = ({}: SignUpEmailProps) => {
       value: password,
       onChange: (e: any) => setPassword(e.target.value),
       label: "Password:",
-      type: "current-password",
+      type: "password",
+      autoComplete: "new-password",
     },
     {
       value: pronouns,
@@ -127,6 +128,7 @@ const SignUpEmail = ({}: SignUpEmailProps) => {
               value={param.value}
               onChange={param.onChange}
               type={param.type}
+              autoComplete={param.autoComplete}
             />
           </div>
         ))}

@@ -76,8 +76,9 @@ const SignInEmail = ({ handleSignIn }: SignInEmailProps) => {
             <input
               className="border rounded-sm border-primaryPurple flex-1 p-1"
               value={password}
-              type="current-password"
+              type="password"
               onChange={(e) => setPassword(e.target.value)}
+              autoComplete="current-password"
             />
             {/* TODO: Forgot password */}
             <button
