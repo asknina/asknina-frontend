@@ -17,10 +17,10 @@ import { useConversationStore } from "@/providers/conversationStoreProvider";
 interface SystemResponseProps {
   message: MessageType & AdditionalMessageDetails;
   isCurrentChat: boolean;
-  loading: boolean;
+  isLoading: boolean;
   isResponded: boolean;
 }
-const SystemResponse = ({ message }: SystemResponseProps) => {
+const SystemResponse = ({ message, isLoading }: SystemResponseProps) => {
   const { respondToMessage } = useConversationStore((state) => state);
 
   const [response, setResponse] = useState(message.response);
@@ -43,29 +43,38 @@ const SystemResponse = ({ message }: SystemResponseProps) => {
         <div className="flex-1 break-words space-y-2">
           <Remark>{message.content}</Remark>
         </div>
-        <div className="w-16 flex flex-row items-center justify-around self-end">
-          {response?.liked ? (
-            <div>
-              <BsFillHandThumbsUpFill />
-            </div>
-          ) : (
-            <button className="" onClick={() => handleResponse(true)}>
-              <BsHandThumbsUp />
-            </button>
-          )}
-          {response?.liked ? (
-            <button
-              className="scale-x-[-1]"
-              onClick={() => handleResponse(false)}
-            >
-              <BsHandThumbsDown />
-            </button>
-          ) : (
-            <div className="scale-x-[-1]">
-              <BsHandThumbsDownFill />
-            </div>
-          )}
-        </div>
+        {!isLoading && (
+          <div className="w-16 flex flex-row items-center justify-around self-end">
+            {response?.liked ? (
+              <div>
+                <BsFillHandThumbsUpFill />
+              </div>
+            ) : (
+              <button onClick={() => handleResponse(true)}>
+                <BsHandThumbsUp />
+              </button>
+            )}
+
+            {response?.timeResponded ? (
+              <div className="scale-x-[-1]">
+                {response.liked ? (
+                  <button onClick={() => handleResponse(false)}>
+                    <BsHandThumbsDown />
+                  </button>
+                ) : (
+                  <BsHandThumbsDownFill />
+                )}
+              </div>
+            ) : (
+              <button
+                className="scale-x-[-1]"
+                onClick={() => handleResponse(false)}
+              >
+                <BsHandThumbsDown />
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

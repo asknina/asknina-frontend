@@ -14,7 +14,7 @@ const RenderMessages = ({ loading, messages }: RenderMessagesProps) => {
         <SystemResponse
           message={message}
           isCurrentChat={index == messages.length - 1}
-          loading={loading}
+          isLoading={loading}
           isResponded={false}
           key={`dialog-${message.role}-${index}`}
         />

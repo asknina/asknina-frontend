@@ -46,6 +46,7 @@ const Chat = () => {
         Authorization: `Bearer ${user.accessToken}`,
       },
       onError: (error) => console.log(error),
+      onNewMessage: () => scrollToBottom(),
     });
 
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
