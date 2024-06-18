@@ -1,6 +1,6 @@
 import React from "react";
 import AskNinaButton, { Variants } from "../common/Button";
-import { TfiNewWindow } from "react-icons/tfi";
+import { IoPersonOutline } from "react-icons/io5";
 import { useRouter } from "next/navigation";
 
 const ProfileButton = () => {
@@ -11,7 +11,7 @@ const ProfileButton = () => {
       label="Profile"
       onClick={() => router.push("/profile")}
       otherStyles="w-full"
-      icon={<TfiNewWindow />}
+      icon={<IoPersonOutline />}
     />
   );
 };

@@ -5,9 +5,13 @@ interface UserResponseProps {
   message: any;
   index: number;
 }
-const UserResponse = ({ message, index }: UserResponseProps) => {
-  const { user } = useAuthStore((state) => state);
-  const initial = user?.displayName ? user.displayName[0] : user.email[0];
+const UserResponse = ({ message }: UserResponseProps) => {
+  const { user, profile } = useAuthStore((state) => state);
+  const initial = profile?.username
+    ? profile.username[0]
+    : user?.displayName
+    ? user.displayName[0]
+    : user.email[0];
   return (
     <div className="w-full flex items-center justify-center text-right p-4">
       <div className="w-4/5 flex text-right break-words justify-end flex-wrap text-wrap">

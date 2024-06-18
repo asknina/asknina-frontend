@@ -1,8 +1,7 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React from "react";
 import AskNinaButton, { Variants } from "../common/Button";
 import { LuLogOut } from "react-icons/lu";
-import { onAuthStateChanged, signOut } from "@/lib/firebase/auth";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/providers/authStoreProvider";
 

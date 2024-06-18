@@ -66,7 +66,7 @@ const Sidebar = ({}) => {
   };
 
   return (
-    <div className=" w-1/5 flex flex-col text-primaryPurple h-screen login-background max-h-screen">
+    <div className=" w-full flex flex-col text-primaryPurple h-screen login-background max-h-screen">
       <div className=" h-content p-2">
         <AskNinaButton
           label={"Home"}
@@ -88,7 +88,7 @@ const Sidebar = ({}) => {
       <div className="flex-1 my-2 space-y-2 overflow-y-auto p-2">
         {/* Nina discovery page */}
         {conversations?.length
-          ? conversations.map((chat, index) => (
+          ? conversations.map((chat) => (
               <ChatSidebarButton
                 key={chat.conversationId}
                 label={chat.title}

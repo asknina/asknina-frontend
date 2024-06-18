@@ -5,6 +5,7 @@ import { useAuthStore } from "@/providers/authStoreProvider";
 
 import { redirect, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 
 export default function DashboardLayout({
   children, // will be a page or nested layout
@@ -23,11 +24,13 @@ export default function DashboardLayout({
 
   if (user && user.uid) {
     return (
-      <div className="flex h-screen w-full">
-        <Sidebar />
-
-        <div className="h-screen flex-1 flex flex-col relative">{children}</div>
-      </div>
+      <PanelGroup autoSaveId="example" direction="horizontal">
+        <Panel defaultSize={30} maxSize={40} minSize={20}>
+          <Sidebar />
+        </Panel>
+        <PanelResizeHandle />
+        <Panel>{children}</Panel>
+      </PanelGroup>
     );
   }
 }

@@ -90,7 +90,7 @@ const ChatSidebarButton = ({
           <span className="self-start truncate flex-1">
             {label?.toString()}
           </span>
-          <div className="space-x-2 inline-flex items-center w-1/6">
+          <div className="space-x-2 inline-flex items-center justify-end w-1/6">
             <button onClick={handleEditClick} className="hover:cursor-pointer">
               <span>
                 <FiEdit3 />
