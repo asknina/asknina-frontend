@@ -31,7 +31,7 @@ const SystemResponse = ({ message, isLoading }: SystemResponseProps) => {
   };
 
   return (
-    <div className="w-full flex flex-row justify-center bg-grey-100 border border-grey-300 p-4">
+    <div className="w-full flex flex-row justify-center bg-grey-100 border border-grey-300 px-1 md:px-4 py-4">
       <div className="flex flex-row max-w-screen-lg">
         <div className="relative w-12 h-12 p-1 mr-4 self-start">
           <Image

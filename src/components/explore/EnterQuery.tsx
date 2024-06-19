@@ -25,7 +25,7 @@ const EnterQuery = ({
       {showReload && <RegenerateResponseButton reload={reload} />}
       <QuestionQuery onSubmit={onSubmit} input={input} onChange={onChange} />
 
-      <p className="text-xs text-grey-200">
+      <p className="text-xs text-grey-200 text-center">
         Ask Nina AI. Our mission to empower teen girls to explore STEM careers.
         Your feedback will help us improve.
       </p>

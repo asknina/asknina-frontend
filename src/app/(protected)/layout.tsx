@@ -1,11 +1,12 @@
 "use client";
 
-import Sidebar from "@/components/common/Sidebar";
 import { useAuthStore } from "@/providers/authStoreProvider";
 
 import { redirect, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
+
+import DesktopLayout from "@/components/layout/DesktopLayout";
+import MobileLayout from "@/components/layout/MobileLayout";
 
 export default function DashboardLayout({
   children, // will be a page or nested layout
@@ -24,13 +25,14 @@ export default function DashboardLayout({
 
   if (user && user.uid) {
     return (
-      <PanelGroup autoSaveId="example" direction="horizontal">
-        <Panel defaultSize={30} maxSize={40} minSize={20}>
-          <Sidebar />
-        </Panel>
-        <PanelResizeHandle />
-        <Panel>{children}</Panel>
-      </PanelGroup>
+      <>
+        <div className="hidden md:block">
+          <DesktopLayout>{children}</DesktopLayout>
+        </div>
+        <div className="block md:hidden">
+          <MobileLayout>{children}</MobileLayout>
+        </div>
+      </>
     );
   }
 }

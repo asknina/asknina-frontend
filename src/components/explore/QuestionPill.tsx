@@ -15,7 +15,7 @@ const QuestionPill = ({
 }: QuestionPillProps) => {
   return (
     <div
-      className="bg-grey-100 text-sm w-full h-16 flex items-center justify-center rounded-full text-center p-2 hover:cursor-pointer"
+      className="bg-grey-100  hover:shadow-sm hover:shadow-primaryPink text-sm w-full h-20 flex items-center justify-center rounded-full text-center p-4 md:p-2 hover:cursor-pointer"
       onClick={() => handleQuestionTextClick(question)}
     >
       {question.question}

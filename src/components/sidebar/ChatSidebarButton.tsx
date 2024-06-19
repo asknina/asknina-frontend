@@ -83,11 +83,11 @@ const ChatSidebarButton = ({
           </div>
         </div>
       ) : (
-        <div
-          className="space-x-2 inline-flex items-center hover:cursor-pointer w-full h-6 "
-          onClick={() => onClick()}
-        >
-          <span className="self-start truncate flex-1">
+        <div className="space-x-2 inline-flex items-center hover:cursor-pointer w-full h-6 ">
+          <span
+            className="self-start truncate flex-1"
+            onClick={() => onClick()}
+          >
             {label?.toString()}
           </span>
           <div className="space-x-2 inline-flex items-center justify-end w-1/6">

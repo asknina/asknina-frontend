@@ -46,7 +46,6 @@ const Chat = () => {
         Authorization: `Bearer ${user.accessToken}`,
       },
       onError: (error) => console.error(error),
-      onNewMessage: () => scrollToBottom(),
     });
 
   const scrollToBottom = () => {
@@ -83,7 +82,7 @@ const Chat = () => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, currentConvoMessages, cleanedMessages]);
 
   useEffect(() => {
     setCleanedMessages(
@@ -135,7 +134,7 @@ const Chat = () => {
 
   return (
     <div className="h-screen relative flex flex-col overflow-y-auto">
-      <div className="sticky top-0 w-full flex justify-end p-2">
+      <div className="fixed top-0 w-full justify-end p-2 z-30 hidden md:flex">
         <button onClick={handleCloseButton}>
           <IoClose size={20} />
         </button>
@@ -143,7 +142,7 @@ const Chat = () => {
       <div className="w-full flex flex-col pb-16 flex-1 justify-start">
         <div className="w-full flex flex-row justify-center p-4">
           <div className="flex flex-row max-w-screen-lg items-center w-full">
-            <div className="relative w-12 h-12 p-1 mr-4 self-start">
+            <div className="relative w-12 h-12 md:p-1 mr-4 self-start">
               <Image src={AskNinaIcon} alt="ask nina in purple" />
             </div>
             <div className="flex-1">Hi, I&apos;m Nina!</div>
@@ -166,7 +165,7 @@ const Chat = () => {
           input={input}
           onChange={onChange}
           reload={regenerate}
-          showReload
+          showReload={numberReload < 3}
         />
       </div>
     </div>

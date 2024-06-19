@@ -6,8 +6,8 @@ import MainExplore from "@/components/explore/MainExplore";
 
 const LoggedInHomePage = () => {
   return (
-    <div className="flex h-screen flex-col items-center px-8">
-      <div className="relative w-1/2">
+    <div className="flex h-screen flex-col items-center px-2 md:px-8">
+      <div className="relative w-full md:w-1/2">
         <Image src={askNinaLogo} alt={"ask-nina"} priority />
       </div>
       <div className="flex-1 flex">

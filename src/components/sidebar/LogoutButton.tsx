@@ -5,7 +5,11 @@ import { LuLogOut } from "react-icons/lu";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/providers/authStoreProvider";
 
-const LogoutButton = () => {
+const LogoutButton = ({
+  setIsMenuOpen,
+}: {
+  setIsMenuOpen?: (val: boolean) => void;
+}) => {
   const { isLoggedIn, logout } = useAuthStore((state) => state);
   const router = useRouter();
 
@@ -17,6 +21,7 @@ const LogoutButton = () => {
 
   const handleLogout = async () => {
     logout();
+    if (setIsMenuOpen) setIsMenuOpen(false);
   };
 
   return (

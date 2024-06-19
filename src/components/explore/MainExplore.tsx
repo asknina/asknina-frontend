@@ -108,68 +108,59 @@ const MainExplore = ({}: MainExploreProps) => {
     });
   };
 
+  const questionList = [
+    {
+      title: "Discover",
+      icon: <FaRegLightbulb size={30} />,
+      questions: discoverQuestions,
+    },
+    {
+      title: "Brainstorm",
+      icon: <LiaConnectdevelop size={35} />,
+      questions: brainstormQuestions,
+    },
+    {
+      title: "Connect",
+      icon: <SiNextcloud size={35} />,
+      questions: connectQuestions,
+    },
+  ];
   return (
-    <div className="flex flex-col h-inherit">
-      <div className="w-full flex flex-row space-x-4 flex-1">
-        <div className="flex flex-col items-center w-1/3">
-          <div className="flex flex-col items-center justify-center h-20">
-            <span>
-              <FaRegLightbulb size={30} />
-            </span>
-            <h2 className="font-display">Discover</h2>
-          </div>
-          <div className="flex flex-col space-y-4">
-            {discoverQuestions.map((question) => (
-              <QuestionPill
-                key={question.question.substring(0, 10)}
-                question={question}
-                handleQuestionTextClick={handleQuestionTextClick}
-              />
-            ))}
-          </div>
-        </div>
-        <div className="flex flex-col items-center w-1/3">
-          <div className="flex flex-col items-center justify-center h-20">
-            <span>
-              <LiaConnectdevelop size={35} />
-            </span>
-            <h2 className="font-display">Brainstorm</h2>
-          </div>
-          <div className="flex flex-col space-y-4">
-            {brainstormQuestions.map((question) => (
-              <QuestionPill
-                key={question.question.substring(0, 10)}
-                question={question}
-                handleQuestionTextClick={handleQuestionTextClick}
-              />
-            ))}
-          </div>
-        </div>
-        <div className="flex flex-col items-center w-1/3">
-          <div className="flex flex-col items-center justify-center h-20">
-            <span>
-              <SiNextcloud size={35} />
-            </span>
-            <h2 className="font-display">Connect</h2>
-          </div>
-          <div className="flex flex-col space-y-4">
-            {connectQuestions.map((question) => (
-              <QuestionPill
-                key={question.question.substring(0, 10)}
-                question={question}
-                handleQuestionTextClick={handleQuestionTextClick}
-              />
-            ))}
-          </div>
-        </div>
+    <div className="flex flex-col h-inherit overflow-y-auto relative pb-36 md:pb-0">
+      <div className="w-full flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 flex-1">
+        {questionList.map(({ title, icon, questions }) => {
+          return (
+            <div
+              className="flex flex-col items-center w-full md:w-1/3 px-0.5"
+              key={title}
+            >
+              <div className="flex flex-col items-center justify-center h-20">
+                <span>{icon}</span>
+                <h2 className="font-display">{title}</h2>
+              </div>
+              <div className="flex flex-col space-y-4 w-full">
+                {questions.map((question) => (
+                  <QuestionPill
+                    key={question.question.substring(0, 10)}
+                    question={question}
+                    handleQuestionTextClick={handleQuestionTextClick}
+                  />
+                ))}
+              </div>
+            </div>
+          );
+        })}
       </div>
 
-      <EnterQuery
-        showReload={false}
-        onSubmit={handleEnter}
-        input={initialQuestion.question}
-        onChange={handleQueryChange}
-      />
+      <div className="fixed bottom-0 left-0 right-0 md:relative bg-white shadow-sm md:shadow-none">
+        <EnterQuery
+          showReload={false}
+          onSubmit={handleEnter}
+          input={initialQuestion.question}
+          onChange={handleQueryChange}
+          otherStyles="px-4"
+        />
+      </div>
     </div>
   );
 };

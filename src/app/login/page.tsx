@@ -9,7 +9,7 @@ import SignInComponent from "@/components/auth/SignInComponent";
 
 const Login = () => {
   return (
-    <MainContainer styles="login-background">
+    <MainContainer styles="login-background px-4">
       <div className="mb-4">
         <div className="flex relative">
           <Image src={askNinaLogo} alt={"ask-nina"} priority />
