@@ -70,9 +70,28 @@ const MainExplore = ({}: MainExploreProps) => {
   const { createConversation, conversations, setCurrentConversation } =
     useConversationStore((state) => state);
 
-  const handleEnter = (e: any) => {
+  const handleEnter = async (e: any) => {
     e.preventDefault();
+    await handleCreateNewChat(
+      initialQuestion.question,
+      initialQuestion.promptNumber
+    );
     router.push(`/chat`);
+  };
+
+  const handleCreateNewChat = async (
+    question: string,
+    promptNumber: number
+  ) => {
+    setInitialQuestion({ question, promptNumber });
+    const initialMessages = [
+      createMessage({
+        role: SystemRoles.SYSTEM,
+        content: systemPrompts[promptNumber],
+      }),
+      createMessage({ role: SystemRoles.USER, content: question }),
+    ];
+    await createConversation(user.uid, initialMessages, question);
   };
 
   const handleQuestionTextClick = async (question: any) => {
@@ -80,16 +99,7 @@ const MainExplore = ({}: MainExploreProps) => {
     if (matchedConvo) {
       setCurrentConversation(matchedConvo.conversationId);
     } else {
-      setInitialQuestion(question);
-      const { promptNumber } = question;
-      const initialMessages = [
-        createMessage({
-          role: SystemRoles.SYSTEM,
-          content: systemPrompts[promptNumber],
-        }),
-        createMessage({ role: SystemRoles.USER, content: question.question }),
-      ];
-      await createConversation(user.uid, initialMessages, question.question);
+      await handleCreateNewChat(question.question, question.promptNumber);
     }
     router.push("/chat");
   };

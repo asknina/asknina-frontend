@@ -134,7 +134,7 @@ const Chat = () => {
 
   return (
     <div className="h-screen relative flex flex-col overflow-y-auto">
-      <div className="fixed top-0 w-full justify-end p-2 z-30 hidden md:flex">
+      <div className="fixed top-0 right-4 p-2 z-30 hidden md:block">
         <button onClick={handleCloseButton}>
           <IoClose size={20} />
         </button>
