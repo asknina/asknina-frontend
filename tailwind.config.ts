@@ -10,6 +10,7 @@ const config: Config = {
     extend: {
       fontFamily: {
         'display': ['Courier New'],
+        'nunito': ['Nunito', 'sans-serif'],
       },
       colors: {
         primaryPink: "#F267ED",
