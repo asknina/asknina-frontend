@@ -8,6 +8,8 @@ import { useEffect, useState } from "react";
 import DesktopLayout from "@/components/layout/DesktopLayout";
 import MobileLayout from "@/components/layout/MobileLayout";
 
+import { GoogleTagManager } from "@next/third-parties/google";
+
 export default function DashboardLayout({
   children, // will be a page or nested layout
 }: {
@@ -26,6 +28,7 @@ export default function DashboardLayout({
   if (user && user.uid) {
     return (
       <>
+        <GoogleTagManager gtmId={process.env.NEXT_GTM_ID || ""} />
         <div className="hidden md:block">
           <DesktopLayout>{children}</DesktopLayout>
         </div>
