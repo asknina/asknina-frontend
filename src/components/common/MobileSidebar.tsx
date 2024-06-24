@@ -11,7 +11,7 @@ import { useRouter } from "next/navigation";
 import { Conversation, SystemRoles } from "@/types/chat";
 import { getAllUserConversations } from "@/lib/firebase/data/chats";
 import { getRandomInteger } from "@/lib/util/utilities";
-import { systemPrompts } from "@/lib/util/constants";
+import { descriptor, systemPrompts } from "@/lib/util/constants";
 import { useAuthStore } from "@/providers/authStoreProvider";
 import { useConversationStore } from "@/providers/conversationStoreProvider";
 import { createMessage } from "@axflow/models/shared";
@@ -47,8 +47,8 @@ const MobileSidebar = ({ setIsMenuOpen }: MobileSidebarProps) => {
 
   const handleCreateNewChat = async () => {
     setIsMenuOpen(false);
-    const initialPromptRandomIdx = getRandomInteger(systemPrompts.length);
-    const prompt = systemPrompts[initialPromptRandomIdx];
+    const initialPromptRandomIdx = getRandomInteger(descriptor.length);
+    const prompt = systemPrompts(initialPromptRandomIdx);
     const message = createMessage({
       content: prompt,
       role: SystemRoles.SYSTEM,

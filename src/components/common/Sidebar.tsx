@@ -13,7 +13,7 @@ import { useAuthStore } from "@/providers/authStoreProvider";
 import { useConversationStore } from "@/providers/conversationStoreProvider";
 import ProfileButton from "../sidebar/ProfileButton";
 import { getRandomInteger } from "@/lib/util/utilities";
-import { systemPrompts } from "@/lib/util/constants";
+import { descriptor, systemPrompts } from "@/lib/util/constants";
 import { createMessage } from "@axflow/models/shared";
 
 const Sidebar = ({}) => {
@@ -42,8 +42,8 @@ const Sidebar = ({}) => {
   };
 
   const handleCreateNewChat = async () => {
-    const initialPromptRandomIdx = getRandomInteger(systemPrompts.length);
-    const prompt = systemPrompts[initialPromptRandomIdx];
+    const initialPromptRandomIdx = getRandomInteger(descriptor.length);
+    const prompt = systemPrompts(initialPromptRandomIdx);
     const message = createMessage({
       content: prompt,
       role: SystemRoles.SYSTEM,

@@ -1,23 +1,21 @@
 "use client";
-import React, { useContext } from "react";
+import React from "react";
+import { useRouter } from "next/navigation";
+
+import { useChatStore } from "@/providers/chatStoreProvider";
+import { useAuthStore } from "@/providers/authStoreProvider";
+import { useConversationStore } from "@/providers/conversationStoreProvider";
+
 import QuestionPill from "./QuestionPill";
-import RegenerateResponseButton from "./RegenerateResponseButton";
-import QuestionQuery from "./QuestionQuery";
+import EnterQuery from "./EnterQuery";
 
 import { FaRegLightbulb } from "react-icons/fa6";
 import { LiaConnectdevelop } from "react-icons/lia";
 import { SiNextcloud } from "react-icons/si";
 
-import { MdOutlineTranslate } from "react-icons/md";
-import { useRouter } from "next/navigation";
-import EnterQuery from "./EnterQuery";
-import { useChatStore } from "@/providers/chatStoreProvider";
-import { createNewConversation } from "@/lib/firebase/data/chats";
-import { useAuthStore } from "@/providers/authStoreProvider";
-import { useConversationStore } from "@/providers/conversationStoreProvider";
-import { MessageType, createMessage } from "@axflow/models/shared";
+import { createMessage } from "@axflow/models/shared";
 import { Conversation, SystemRoles } from "@/types/chat";
-import { systemPrompts } from "@/lib/util/constants";
+import { descriptor, systemPrompts } from "@/lib/util/constants";
 import { getRandomInteger } from "@/lib/util/utilities";
 
 interface MainExploreProps {}
@@ -87,7 +85,7 @@ const MainExplore = ({}: MainExploreProps) => {
     const initialMessages = [
       createMessage({
         role: SystemRoles.SYSTEM,
-        content: systemPrompts[promptNumber],
+        content: systemPrompts(promptNumber),
       }),
       createMessage({ role: SystemRoles.USER, content: question }),
     ];
@@ -113,7 +111,7 @@ const MainExplore = ({}: MainExploreProps) => {
   const handleQueryChange = (e: any) => {
     e.preventDefault();
     setInitialQuestion({
-      promptNumber: getRandomInteger(systemPrompts.length),
+      promptNumber: getRandomInteger(descriptor.length),
       question: e.target.value,
     });
   };

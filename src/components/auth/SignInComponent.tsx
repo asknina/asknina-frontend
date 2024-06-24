@@ -5,6 +5,7 @@ import Button from "@/components/common/Button";
 
 import { useAuthStore } from "@/providers/authStoreProvider";
 import { useRouter } from "next/navigation";
+import { TfiNewWindow } from "react-icons/tfi";
 
 const SignInComponent = () => {
   const { user, loginWithEmail, loginWithGoogle } = useAuthStore(
@@ -42,15 +43,28 @@ const SignInComponent = () => {
 
       <div className="text-sm">
         By continuing you agree to our{" "}
-        <Link href="https://www.asknina.ai/terms-and-conditions">
+        <Link
+          href="https://www.asknina.ai/terms-and-conditions"
+          target="_blank"
+          className="inline-flex space-x-4"
+        >
+          <TfiNewWindow size={16} />
           Terms and Conditions
         </Link>{" "}
         and{" "}
-        <Link href="https://www.asknina.ai/privacy-policy">Privacy Policy</Link>
+        <Link
+          href="https://www.asknina.ai/privacy-policy"
+          target="_blank"
+          className="inline-flex space-x-4"
+        >
+          {" "}
+          <TfiNewWindow size={16} />
+          Privacy Policy
+        </Link>
         .
       </div>
 
-      <div className="text-sm">
+      <div className="text-normal">
         Don&apos;t have an account? <Link href="/register"> Register here</Link>
       </div>
     </div>
