@@ -2,7 +2,7 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
-import { GoogleAnalytics, GoogleTagManager } from "@next/third-parties/google";
+import { GoogleAnalytics } from "@next/third-parties/google";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -14,7 +14,6 @@ const RootLayout = function ({
   return (
     <html lang="en">
       <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || ""} />
-      <GoogleTagManager gtmId={process.env.NEXT_GTM_ID || ""} />
 
       <body className={inter.className}>
         <Providers>
