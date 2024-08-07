@@ -1,4 +1,4 @@
-import { doc, setDoc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc, updateDoc, getDocs, collection, FieldValue, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase";
 import { UserCredential } from "firebase/auth";
 
@@ -8,6 +8,8 @@ interface User {
     pronouns: string;
     username: string;
     dateOfBirth: string;
+    created?: FieldValue;
+    updated?: FieldValue;
 }
 
 export async function getUser(userId: any) {
@@ -18,7 +20,7 @@ export default async function addUser(userObj: User) {
     try {
         await setDoc(
             doc(db, "users", userObj.uid),
-            { ...userObj, conversations: [] }
+            { ...userObj, conversations: [], created: serverTimestamp() }
         ).then(async () => {
             return await getUser(userObj.uid);
         });
@@ -42,6 +44,7 @@ export const fetchUserData = async (userCredential: UserCredential): Promise<any
                 pronouns: "",
                 username: "",
                 dateOfBirth: "",
+                created: serverTimestamp()
             });
         }
     } catch (e) {
@@ -56,7 +59,7 @@ export const getUserProfile = async (userId: string): Promise<any> => {
 }
 
 export const updateUserProfile = async (userId: string, userInfo: Partial<User>): Promise<any> => {
-    return await updateDoc(doc(db, "users", userId), userInfo).then(async () => {
+    return await updateDoc(doc(db, "users", userId), { ...userInfo, updated: serverTimestamp() }).then(async () => {
         return await getUserProfile(userId)
     });
 }

@@ -1,4 +1,5 @@
 import { MessageType } from "@axflow/models/shared";
+import { FieldValue } from "firebase/firestore";
 
 export interface DialogProps {
     role: SystemRoles;
@@ -18,6 +19,7 @@ export interface Conversation {
     title: string;
     messages: MessageInfo[];
     promptQuestion?: string;
+    created?: FieldValue;
 }
 
 export interface MessageInfo {
@@ -30,4 +32,6 @@ export interface MessageObj {
 
 export interface AdditionalMessageDetails {
     response?: { liked: boolean, timeResponded: string }
+    created?: FieldValue
+    updated?: FieldValue
 }

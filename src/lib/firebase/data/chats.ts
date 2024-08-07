@@ -88,7 +88,7 @@ export async function createNewConversation(
     messages: any[],
     promptQuestion?: string
 ): Promise<any> {
-    const partialConvo: Partial<Conversation> = { title, messages: [] }
+    const partialConvo: Partial<Conversation> = { title, messages: [], created: serverTimestamp() }
     if (promptQuestion) {
         partialConvo.promptQuestion = promptQuestion
     }
@@ -117,6 +117,7 @@ export async function createNewConversation(
     const newConvos = [...(user?.conversations || []), convoDoc.id];
     return await updateDoc(doc(db, "users", userId), {
         conversations: newConvos,
+        updated: serverTimestamp()
     }).then(() => {
         return convoDoc.id
     });
@@ -133,6 +134,7 @@ export async function deleteConversation(
     const filteredConvos = [...(user?.conversations || [])]?.filter(convoId => convoId !== conversationId)
     return await updateDoc(doc(db, "users", userId), {
         conversations: filteredConvos,
+        updated: serverTimestamp()
     });
 }
 
@@ -148,13 +150,13 @@ export async function saveConversationDetails(
     conversationId: string,
     conversation: Partial<Conversation>
 ) {
-    return await updateDoc(doc(db, "conversations", conversationId), conversation)
+    return await updateDoc(doc(db, "conversations", conversationId), { ...conversation, updated: serverTimestamp() })
 }
 
 // add chat
 export async function addMessageToConversation(conversationId: string, message: MessageType & AdditionalMessageDetails, convoIndex?: number) {
     if (message?.id) {
-        const messageDoc = await setDoc(doc(db, "messages", message.id), message);
+        const messageDoc = await setDoc(doc(db, "messages", message.id), { ...message, created: serverTimestamp() });
 
         return await getConversation(conversationId).then(async (conversation) => {
             if (conversation?.messages) {
@@ -187,7 +189,9 @@ export async function respondToChat(
 ) {
     return await updateDoc(doc(db, "messages", messageId), {
         response:
-            { liked: response, timeResponded: Timestamp.now() }
+            { liked: response, timeResponded: serverTimestamp() },
+        updated: serverTimestamp()
+
     }).then(async () => {
         return await getMessage(messageId)
     })
