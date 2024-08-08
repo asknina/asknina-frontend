@@ -32,6 +32,6 @@ export interface MessageObj {
 
 export interface AdditionalMessageDetails {
     response?: { liked: boolean, timeResponded: string }
-    created?: FieldValue
-    updated?: FieldValue
+    created?: FieldValue | number
+    updated?: FieldValue | number
 }
