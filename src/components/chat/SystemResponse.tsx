@@ -30,7 +30,7 @@ const SystemResponse = ({ message, isLoading }: SystemResponseProps) => {
 
   const [response, setResponse] = useState(message.response);
   const URL_REGEX =
-    /[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\.[a-zA-Z]{2,}(?:\/[^\s]*)?/g;
+    /[a-zA-Z0-9][a-zA-Z0-9.-]*[a-zA-Z0-9]\.[a-zA-Z]{2,}(?:\/[^\s]*)?/g;
   const [linkPreviews, setLinkPreviews] = useState<LinkPreview[]>([]);
   const extractUrls = (text: string): string[] => {
     return text.match(URL_REGEX) || [];
