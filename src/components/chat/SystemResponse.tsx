@@ -54,7 +54,7 @@ const SystemResponse = ({ message, isLoading }: SystemResponseProps) => {
 
       const previews: LinkPreview[] = [];
 
-      for (const url of urls.slice(0, 3)) {
+      for (const url of urls) {
         previews.push({
           url: `https://${url}`,
           domain: url,

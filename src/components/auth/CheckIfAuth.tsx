@@ -3,7 +3,6 @@ import { useAuthStore } from "@/providers/authStoreProvider";
 import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import LoadingComp from "../common/LoadingComp";
-//
 
 const CheckIfAuth = () => {
   const { user } = useAuthStore((state) => state);
