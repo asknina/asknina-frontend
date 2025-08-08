@@ -326,7 +326,7 @@ const SystemResponse = ({ message, isLoading }: SystemResponseProps) => {
                   <button
                     key={`${link.url}-${index}`}
                     onClick={(e) => handleExternalLinkClick(e, link.url)}
-                    className="inline-flex items-center px-4 py-2 bg-[#ECECF1] text-[#423EEE] rounded-lg text-sm font-medium hover:shadow-[0_0_16px_rgba(242,103,237,0.3)] transition-all duration-300 border border-[#C5C5D1]"
+                    className="inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-full bg-primaryPurple text-white"
                   >
                     {link.domain}
                   </button>
