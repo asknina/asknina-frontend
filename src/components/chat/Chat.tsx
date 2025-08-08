@@ -76,6 +76,14 @@ const Chat = () => {
   // Handle new messages and save unsaved ones
   useEffect(() => {
     if (!loading && messages.length) {
+      console.log("=== NEW MESSAGES RECEIVED ===");
+      console.log("All messages:", messages);
+      console.log("Latest message:", messages[messages.length - 1]);
+      console.log(
+        "Message structure:",
+        JSON.stringify(messages[messages.length - 1], null, 2)
+      );
+      console.log("=============================");
       addUnsavedMessages(messages);
     }
   }, [messages, loading]);
