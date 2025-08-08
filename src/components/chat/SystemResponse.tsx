@@ -177,6 +177,149 @@ const SystemResponse = ({ message, isLoading }: SystemResponseProps) => {
               {makeUrlsClickable(message.content)}
             </ReactMarkdown>
 
+            {/* Media Content Display - Aligned with text container */}
+            {hasMediaContent && (
+              <div className="break-words space-y-2 max-w-full overflow-hidden">
+                {/* Horizontal Scroll Container - aligned with text */}
+                <div className="overflow-x-auto w-full custom-scrollbar">
+                  <div className="flex space-x-4 pb-2 flex-nowrap min-w-0 justify-center">
+                    {/* Images */}
+                    {imagesData.map((image: any, index: number) => (
+                      <div
+                        key={`image-${index}`}
+                        className="flex-shrink-0 w-36 md:w-40 h-32 relative group rounded-lg overflow-hidden border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer"
+                        onClick={() => window.open(image.url, "_blank")}
+                      >
+                        <img
+                          src={image.url}
+                          alt={image.title || `Related image ${index + 1}`}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = "none";
+                          }}
+                        />
+                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-200" />
+                        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                          <div className="w-6 h-6 bg-white bg-opacity-90 rounded-full flex items-center justify-center">
+                            <svg
+                              className="w-4 h-4 text-gray-700"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                              />
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+
+                    {/* Videos */}
+                    {videosData.map((video: any, index: number) => (
+                      <div
+                        key={`video-${index}`}
+                        className="flex-shrink-0 w-64 md:w-80 lg:w-96 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200 custom-scrollbar"
+                      >
+                        {/* Video Thumbnail */}
+                        <div className="relative w-full h-56">
+                          {video.embedUrl ? (
+                            <iframe
+                              src={video.embedUrl}
+                              title={video.title}
+                              className="w-full h-full"
+                              frameBorder="0"
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                              allowFullScreen
+                            />
+                          ) : (
+                            <div className="relative w-full h-full bg-gray-100">
+                              {video.thumbnail ? (
+                                <>
+                                  <img
+                                    src={video.thumbnail}
+                                    alt={video.title || "Video thumbnail"}
+                                    className="w-full h-full object-cover"
+                                  />
+                                  <div className="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center">
+                                    <div className="w-12 h-12 bg-[#423EEE] rounded-full flex items-center justify-center hover:bg-[#F267ED] transition-colors duration-200">
+                                      <svg
+                                        className="w-6 h-6 text-white ml-1"
+                                        fill="currentColor"
+                                        viewBox="0 0 20 20"
+                                      >
+                                        <path d="M6.3 4.1c0-.4.4-.7.8-.5l7.4 4.2c.4.2.4.8 0 1l-7.4 4.2c-.4.2-.8-.1-.8-.5V4.1z" />
+                                      </svg>
+                                    </div>
+                                  </div>
+                                </>
+                              ) : (
+                                <div className="flex items-center justify-center h-full">
+                                  <div className="w-12 h-12 bg-[#423EEE] rounded-full flex items-center justify-center hover:bg-[#F267ED] transition-colors duration-200">
+                                    <svg
+                                      className="w-6 h-6 text-white ml-1"
+                                      fill="currentColor"
+                                      viewBox="0 0 20 20"
+                                    >
+                                      <path d="M6.3 4.1c0-.4.4-.7.8-.5l7.4 4.2c.4.2.4.8 0 1l-7.4 4.2c-.4.2-.8-.1-.8-.5V4.1z" />
+                                    </svg>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Video Info */}
+                        <div className="p-3">
+                          <h3 className="text-sm font-medium text-gray-900 mb-1 overflow-hidden text-ellipsis">
+                            {video.title || "Untitled Video"}
+                          </h3>
+                          <div className="flex items-center text-xs text-gray-600 mb-2">
+                            <span className="font-medium text-gray-900">
+                              {video.channelTitle || "Unknown Channel"}
+                            </span>
+                            {video.viewCount && (
+                              <>
+                                <span className="mx-1">•</span>
+                                <span>
+                                  {parseInt(video.viewCount).toLocaleString()}{" "}
+                                  views
+                                </span>
+                              </>
+                            )}
+                          </div>
+                          <button
+                            onClick={() => {
+                              if (video.watchUrl) {
+                                window.open(video.watchUrl, "_blank");
+                              }
+                            }}
+                            className="w-full inline-flex items-center justify-center px-3 py-1 bg-[#423EEE] text-white text-xs font-medium rounded hover:bg-[#F267ED] transition-colors duration-200"
+                            disabled={!video.watchUrl}
+                          >
+                            <svg
+                              className="w-3 h-3 mr-1"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path d="M6.3 4.1c0-.4.4-.7.8-.5l7.4 4.2c.4.2.4.8 0 1l-7.4 4.2c-.4.2-.8-.1-.8-.5V4.1z" />
+                            </svg>
+                            Watch
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
             {linkPreviews.length > 0 && (
               <div className="flex flex-wrap gap-2 justify-center">
                 {linkPreviews.map((link, index) => (
