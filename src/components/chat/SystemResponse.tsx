@@ -371,10 +371,30 @@ const SystemResponse = ({ message, isLoading }: SystemResponseProps) => {
       <Modal
         isOpen={showModal}
         onRequestClose={handleModalClose}
-        className="bg-white rounded-2xl p-6 max-w-sm mx-auto mt-20 shadow-2xl border-2 border-pink-400"
+        className="relative bg-white rounded-2xl p-6 max-w-sm mx-auto mt-20 shadow-2xl border-2 border-pink-400"
         overlayClassName="fixed inset-0 bg-gray-700 bg-opacity-70 flex items-center justify-center z-50 p-4"
         ariaHideApp={false}
       >
+        <button
+          onClick={handleModalClose}
+          aria-label="Close modal"
+          className="absolute top-3 right-3 p-1 rounded-md text-gray-400 hover:text-primaryPink focus:outline-none focus:ring-2 focus:ring-pink-300"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            className="w-5 h-5"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
         {/* Leaving aSK Nina Header */}
         <div className="text-center mb-6">
           <h3 className="text-lg font-bold text-gray-700 mb-2 font-mono">
@@ -410,10 +430,6 @@ const SystemResponse = ({ message, isLoading }: SystemResponseProps) => {
             Let's go! →
           </button>
         </div>
-
-        <div className="absolute top-4 right-4 w-2 h-2 bg-pink-300 rounded-full opacity-70 animate-pulse"></div>
-        <div className="absolute bottom-4 left-4 w-3 h-3 bg-pink-200 rounded-full opacity-60"></div>
-        <div className="absolute top-8 left-6 w-1 h-1 bg-pink-400 rounded-full opacity-80"></div>
       </Modal>
     </>
   );
