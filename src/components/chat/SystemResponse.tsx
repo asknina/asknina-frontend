@@ -180,7 +180,7 @@ const SystemResponse = ({ message, isLoading }: SystemResponseProps) => {
         {/* Leaving aSK Nina Header */}
         <div className="text-center mb-6">
           <h3 className="text-lg font-bold text-gray-700 mb-2 font-mono">
-            Hey! You're heading off-site
+            Hey! You&apos;re heading off-site
           </h3>
           <p className="text-gray-500 font-sans text-sm">
             This link will take you away from Ask Nina AI✨
@@ -190,7 +190,7 @@ const SystemResponse = ({ message, isLoading }: SystemResponseProps) => {
         {/* URL destination */}
         <div className="mb-6">
           <p className="text-gray-700 font-sans text-sm mb-2 font-medium">
-            You're going to:
+            You&apos;re going to:
           </p>
           <div className="border border-pink-400 rounded-xl p-4 break-all text-sm text-gray-700 font-sans text-center">
             {pendingUrl}
@@ -209,7 +209,7 @@ const SystemResponse = ({ message, isLoading }: SystemResponseProps) => {
             onClick={handleModalConfirm}
             className="px-5 py-3 bg-gradient-to-r from-pink-400 to-purple-600 text-white rounded-xl font-sans font-medium hover:shadow-lg hover:scale-105 transition-all duration-200 text-sm"
           >
-            Let's go! →
+            Let&apos;s go! →
           </button>
         </div>
 
