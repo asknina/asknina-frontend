@@ -398,36 +398,27 @@ const SystemResponse = ({ message, isLoading }: SystemResponseProps) => {
         {/* Leaving aSK Nina Header */}
         <div className="text-center mb-6">
           <h3 className="text-lg font-bold text-gray-700 mb-2 font-mono">
-            Hey! You're heading off-site
+            You are now leaving Ask Nina AI
           </h3>
           <p className="text-gray-500 font-sans text-sm">
-            This link will take you away from Ask Nina AI✨
+            You are headed to{" "}
+            {pendingUrl?.replace(/^https?:\/\//, "").replace(/^www\./, "")}✨
           </p>
-        </div>
-
-        {/* URL destination */}
-        <div className="mb-6">
-          <p className="text-gray-700 font-sans text-sm mb-2 font-medium">
-            You're going to:
-          </p>
-          <div className="border border-pink-400 rounded-xl p-4 break-all text-sm text-gray-700 font-sans text-center">
-            {pendingUrl}
-          </div>
         </div>
 
         {/* Action Buttons */}
-        <div className="flex justify-center space-x-3">
+        <div className="flex justify-center gap-3">
           <button
             onClick={handleModalClose}
-            className="px-5 py-3 bg-gray-300 text-gray-700 rounded-xl font-sans font-medium hover:bg-gray-400 hover:text-white transition-all duration-200 text-sm"
+            className="inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-full bg-gray-300 text-gray-700 hover:bg-gray-400 hover:text-white"
           >
             Stay here
           </button>
           <button
             onClick={handleModalConfirm}
-            className="px-5 py-3 bg-gradient-to-r from-pink-400 to-purple-600 text-white rounded-xl font-sans font-medium hover:shadow-lg hover:scale-105 transition-all duration-200 text-sm"
+            className="inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-full bg-primaryPink text-white"
           >
-            Let's go! →
+            Let's go!
           </button>
         </div>
       </Modal>
