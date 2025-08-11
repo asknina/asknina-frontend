@@ -328,7 +328,7 @@ const SystemResponse = ({ message, isLoading }: SystemResponseProps) => {
                     onClick={(e) => handleExternalLinkClick(e, link.url)}
                     className="inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-full bg-primaryPurple text-white"
                   >
-                    {link.domain}
+                    {link.domain} ↗
                   </button>
                 ))}
               </div>
