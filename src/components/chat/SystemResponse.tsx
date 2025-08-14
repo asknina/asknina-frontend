@@ -61,11 +61,17 @@ const SystemResponse = ({ message, isLoading }: SystemResponseProps) => {
   const [response, setResponse] = useState(message.response);
   const [showModal, setShowModal] = useState(false);
   const [pendingUrl, setPendingUrl] = useState("");
+  const [pendingTitle, setPendingTitle] = useState("");
   const [linkPreviews, setLinkPreviews] = useState<LinkPreview[]>([]);
 
-  const handleExternalLinkClick = (e: React.MouseEvent, url: string) => {
+  const handleExternalLinkClick = (
+    e: React.MouseEvent,
+    url: string,
+    title?: string
+  ) => {
     e.preventDefault();
     setPendingUrl(url);
+    setPendingTitle(title || "");
     setShowModal(true);
   };
 
@@ -80,6 +86,7 @@ const SystemResponse = ({ message, isLoading }: SystemResponseProps) => {
   const handleModalClose = () => {
     setShowModal(false);
     setPendingUrl("");
+    setPendingTitle("");
   };
 
   const URL_REGEX =
@@ -295,9 +302,13 @@ const SystemResponse = ({ message, isLoading }: SystemResponseProps) => {
                             )}
                           </div>
                           <button
-                            onClick={() => {
+                            onClick={(e) => {
                               if (video.watchUrl) {
-                                window.open(video.watchUrl, "_blank");
+                                handleExternalLinkClick(
+                                  e,
+                                  video.watchUrl,
+                                  video.title
+                                );
                               }
                             }}
                             className="w-full inline-flex items-center justify-center px-3 py-1 bg-[#423EEE] text-white text-xs font-medium rounded hover:bg-[#F267ED] transition-colors duration-200"
@@ -371,7 +382,7 @@ const SystemResponse = ({ message, isLoading }: SystemResponseProps) => {
       <Modal
         isOpen={showModal}
         onRequestClose={handleModalClose}
-        className="relative bg-white rounded-2xl p-6 max-w-sm mx-auto mt-20 shadow-2xl border-2 border-pink-400"
+        className="relative bg-white rounded-2xl p-6 max-w-md mx-auto mt-20 shadow-2xl border-2 border-pink-400"
         overlayClassName="fixed inset-0 bg-gray-700 bg-opacity-70 flex items-center justify-center z-50 p-4"
         ariaHideApp={false}
       >
@@ -398,11 +409,13 @@ const SystemResponse = ({ message, isLoading }: SystemResponseProps) => {
         {/* Leaving aSK Nina Header */}
         <div className="text-center mb-6">
           <h3 className="text-lg font-bold text-gray-700 mb-2 font-mono">
-            You are now leaving Ask Nina AI
+            You are now leaving Ask Nina AI ✨
           </h3>
           <p className="text-gray-500 font-sans text-sm">
-            You are headed to{" "}
-            {pendingUrl?.replace(/^https?:\/\//, "").replace(/^www\./, "")}✨
+            and headed to{" "}
+            {pendingTitle
+              ? `YouTube to watch "${pendingTitle}"`
+              : pendingUrl?.replace(/^https?:\/\//, "").replace(/^www\./, "")}
           </p>
         </div>
 
