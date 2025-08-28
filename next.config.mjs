@@ -1,9 +1,22 @@
 import { withSentryConfig } from "@sentry/nextjs";
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Environment variables - these will work on Cloudflare Pages
   env: {
     BACKEND_API: process.env.BACKEND_API,
   },
+
+  // Add output configuration for Cloudflare Pages
+  output: "export",
+
+  // Disable image optimization for static export (required for Cloudflare Pages)
+  images: {
+    unoptimized: true,
+  },
+
+  // Optional: Add trailing slash for better compatibility
+  trailingSlash: true,
 };
 
 export default withSentryConfig(nextConfig, {
@@ -23,9 +36,7 @@ export default withSentryConfig(nextConfig, {
   widenClientFileUpload: true,
 
   // Uncomment to route browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers.
-  // This can increase your server load as well as your hosting bill.
-  // Note: Check that the configured route will not match with your Next.js middleware, otherwise reporting of client-
-  // side errors will fail.
+  // Note: This won't work with static export - you'd need to use Cloudflare Workers for this
   // tunnelRoute: "/monitoring",
 
   // Hides source maps from generated client bundles
@@ -34,9 +45,6 @@ export default withSentryConfig(nextConfig, {
   // Automatically tree-shake Sentry logger statements to reduce bundle size
   disableLogger: true,
 
-  // Enables automatic instrumentation of Vercel Cron Monitors. (Does not yet work with App Router route handlers.)
-  // See the following for more information:
-  // https://docs.sentry.io/product/crons/
-  // https://vercel.com/docs/cron-jobs
-  automaticVercelMonitors: true,
+  // REMOVED: automaticVercelMonitors - this is Vercel-specific and won't work on Cloudflare
+  // For Cloudflare, you'll need to set up monitoring using Cloudflare's tools or other services
 });

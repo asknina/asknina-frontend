@@ -43,3 +43,6 @@ package-lock.json
 # IDE files
 .idea/
 *.iml
+
+.open-next/
+.wrangler/
