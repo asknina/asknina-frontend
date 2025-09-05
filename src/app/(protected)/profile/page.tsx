@@ -3,6 +3,8 @@ import AskNinaButton from "@/components/common/Button";
 import { useAuthStore } from "@/providers/authStoreProvider";
 import React, { useEffect, useState } from "react";
 export const runtime = "edge";
+export const dynamic = "force-dynamic";
+
 const Profile = () => {
   const { user, profile, getUserProfile, updateUserProfile } = useAuthStore(
     (state) => state
