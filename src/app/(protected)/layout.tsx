@@ -9,7 +9,7 @@ import DesktopLayout from "@/components/layout/DesktopLayout";
 import MobileLayout from "@/components/layout/MobileLayout";
 
 import { GoogleTagManager } from "@next/third-parties/google";
-
+export const runtime = "edge";
 export default function DashboardLayout({
   children, // will be a page or nested layout
 }: {
