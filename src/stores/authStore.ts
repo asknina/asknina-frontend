@@ -1,136 +1,153 @@
-import { createUser, signInWithEmail, signInWithGoogle, signOut } from '@/lib/firebase/auth'
-import addUser, { fetchUserData, getUserProfile, updateUserProfile } from '@/lib/firebase/data/users'
-import { createStore } from 'zustand/vanilla'
+import { atom } from 'jotai';
+import { createUser, signInWithEmail, signInWithGoogle, signOut } from '@/lib/firebase/auth';
+import addUser, { fetchUserData, getUserProfile, updateUserProfile } from '@/lib/firebase/data/users';
 
 interface User {
-    email: string,
-    displayName: string,
-    uid: string
-    accessToken: string
-}
-
-export type AuthState = {
-    user: User
-    isLoggedIn: boolean
-    isLoadingAuth: boolean
-    loginError: string
-    profile: ProfileDetails
+    email: string;
+    displayName: string;
+    uid: string;
+    accessToken: string;
 }
 
 export interface ProfileDetails {
-    username: string
-    dateOfBirth: string
-    pronouns: string
+    username: string;
+    dateOfBirth: string;
+    pronouns: string;
 }
 
-export type AuthActions = {
-    setIsLoadingAuth: (value: boolean) => void
-    setUser: (user: User) => void
-    setIsLoggedIn: (value: boolean) => void
-    loginWithEmail: (email: string, password: string) => Promise<boolean>
-    loginWithGoogle: () => Promise<void>
-    createUser: (email: string, password: string, username: string, dateOfBirth: string, pronouns: string) => Promise<void>
-    logout: () => void
-    getUserProfile: (uid: string) => void
-    updateUserProfile: (userInfo: Partial<ProfileDetails>) => void
-}
+export const defaultUser: User = {
+    email: "",
+    displayName: "",
+    uid: "",
+    accessToken: ""
+};
 
-export type AuthStore = AuthState & AuthActions
+export const defaultProfile: ProfileDetails = {
+    username: "",
+    dateOfBirth: "",
+    pronouns: ""
+};
 
-export const defaultInitState: AuthState = {
-    user: {
-        email: "",
-        displayName: "",
-        uid: "",
-        accessToken: ""
-    },
-    isLoggedIn: false,
-    isLoadingAuth: true,
-    loginError: "",
-    profile: {
-        username: "",
-        dateOfBirth: "",
-        pronouns: ""
-    }
-}
+// Base atoms
+export const userAtom = atom<User>(defaultUser);
+export const isLoggedInAtom = atom<boolean>(false);
+export const isLoadingAuthAtom = atom<boolean>(true);
+export const loginErrorAtom = atom<string>("");
+export const profileAtom = atom<ProfileDetails>(defaultProfile);
 
-export const createAuthStore = (
-    initState: AuthState = defaultInitState,
-) => {
-    return createStore<AuthStore>()((set, get) => ({
-        ...initState,
-        setIsLoadingAuth: (value) => set((state) => ({ isLoadingAuth: value })),
-        setUser: (user) => set(() => ({ user: user })),
-        setIsLoggedIn: (value) => set(() => ({ isLoggedIn: value })),
-        loginWithEmail: async (email, password) => {
-            return await signInWithEmail(email, password).then(async (authUser) => {
-                if (authUser) {
-                    const fetchedUser = await fetchUserData(authUser)
-                    set({
-                        user: {
-                            ...authUser.user,
-                            email: authUser.user || "",
-                            displayName: fetchedUser.displayName || "",
-                        }
-                    })
-                }
-                return true
-            }).catch((e) => {
-                set({ loginError: e.message })
-                return false
-            })
-        },
-        loginWithGoogle: async () => {
-            await signInWithGoogle().then(async (authUser) => {
-                if (authUser) {
-                    const fetchedUser = await fetchUserData(authUser)
-                    const token = await authUser.user.getIdToken()
-                    set({
-                        user: {
-                            ...authUser.user,
-                            email: authUser.user.email || "",
-                            displayName: fetchedUser.displayName || "",
-                            accessToken: token || ""
-                        }
-                    })
-                }
-            }).catch((e) => {
-                set({ loginError: e.message })
-            })
-        },
-        createUser: async (email, password, username, dateOfBirth, pronouns) => {
-            await createUser(email, password).then(async (userCred) => {
-                if (userCred) {
-                    const { user } = userCred
-                    await addUser({
-                        email: user.email || "",
-                        uid: user.uid,
-                        pronouns,
-                        username,
-                        dateOfBirth
-                    })
-                    set({
-                        user: {
-                            ...userCred.user,
-                            email: user.email || "",
-                            displayName: user.displayName || "",
-                        }
-                    })
-                }
-            }).catch((e) => { return e })
-        },
-        logout: async () => {
-            await signOut().then(() => {
-                set(defaultInitState)
-            })
-        },
-        getUserProfile: async () => {
-            const userProfile = await getUserProfile(get().user.uid)
-            set({ profile: userProfile })
-        },
-        updateUserProfile: async (userInfo) => {
-            const updatedUser = await updateUserProfile(get().user.uid, userInfo)
-            set({ profile: updatedUser })
+// Action atoms
+export const loginWithEmailAtom = atom(
+    null,
+    async (get, set, { email, password }: { email: string; password: string }) => {
+        try {
+            const authUser = await signInWithEmail(email, password);
+            if (authUser && authUser.user) {
+                const fetchedUser = await fetchUserData(authUser);
+                const token = await authUser.user.getIdToken();
+                set(userAtom, {
+                    email: authUser.user.email || "",
+                    displayName: fetchedUser.displayName || "",
+                    uid: authUser.user.uid,
+                    accessToken: token || ""
+                });
+                set(isLoggedInAtom, true);
+                return true;
+            }
+            return false;
+        } catch (e: any) {
+            set(loginErrorAtom, e.message);
+            return false;
         }
-    }))
-}
+    }
+);
+
+export const loginWithGoogleAtom = atom(
+    null,
+    async (get, set) => {
+        try {
+            const authUser = await signInWithGoogle();
+            if (authUser && authUser.user) {
+                const fetchedUser = await fetchUserData(authUser);
+                const token = await authUser.user.getIdToken();
+                set(userAtom, {
+                    email: authUser.user.email || "",
+                    displayName: fetchedUser.displayName || "",
+                    uid: authUser.user.uid,
+                    accessToken: token || ""
+                });
+                set(isLoggedInAtom, true);
+            }
+        } catch (e: any) {
+            set(loginErrorAtom, e.message);
+        }
+    }
+);
+
+export const createUserAtom = atom(
+    null,
+    async (get, set, { email, password, username, dateOfBirth, pronouns }: {
+        email: string;
+        password: string;
+        username: string;
+        dateOfBirth: string;
+        pronouns: string;
+    }) => {
+        try {
+            const userCred = await createUser(email, password);
+            if (userCred && userCred.user) {
+                const { user } = userCred;
+                await addUser({
+                    email: user.email || "",
+                    uid: user.uid,
+                    pronouns,
+                    username,
+                    dateOfBirth
+                });
+                const token = await user.getIdToken();
+                set(userAtom, {
+                    email: user.email || "",
+                    displayName: user.displayName || "",
+                    uid: user.uid,
+                    accessToken: token || ""
+                });
+                set(isLoggedInAtom, true);
+            }
+        } catch (e: any) {
+            set(loginErrorAtom, e.message);
+            throw e;
+        }
+    }
+);
+
+export const logoutAtom = atom(
+    null,
+    async (get, set) => {
+        await signOut();
+        set(userAtom, defaultUser);
+        set(isLoggedInAtom, false);
+        set(profileAtom, defaultProfile);
+        set(isLoadingAuthAtom, false);
+    }
+);
+
+export const getUserProfileAtom = atom(
+    null,
+    async (get, set) => {
+        const user = get(userAtom);
+        if (user.uid) {
+            const userProfile = await getUserProfile(user.uid);
+            set(profileAtom, userProfile);
+        }
+    }
+);
+
+export const updateUserProfileAtom = atom(
+    null,
+    async (get, set, userInfo: Partial<ProfileDetails>) => {
+        const user = get(userAtom);
+        if (user.uid) {
+            const updatedUser = await updateUserProfile(user.uid, userInfo);
+            set(profileAtom, updatedUser);
+        }
+    }
+);

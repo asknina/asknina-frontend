@@ -13,11 +13,11 @@ import InitialChat from "./InitialChat";
 import { useChat } from "@axflow/models/react";
 import { MessageType } from "@axflow/models/shared";
 import { useChatStore } from "@/providers/chatStoreProvider";
-import { useAuthStore } from "@/providers/authStoreProvider";
 import { useConversationStore } from "@/providers/conversationStoreProvider";
 import { addMessageToConversation } from "@/lib/firebase/data/chats";
 import { mapCurrentConvoMsgToMessage } from "@/lib/util/utilities";
 import { SystemRoles } from "@/types/chat";
+import { useAuth } from "@/providers/authStoreProvider";
 
 const localPort = "8000";
 const baseUrl =
@@ -32,12 +32,10 @@ const Chat = () => {
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
   const router = useRouter();
 
-  const { initialQuestion, setInitialQuestion } = useChatStore(
-    (state) => state
-  );
+  const { initialQuestion, setInitialQuestion } = useChatStore();
   const { currentConversation, currentConvoMessages, setCurrentConversation } =
-    useConversationStore((state) => state);
-  const { user } = useAuthStore((state) => state);
+    useConversationStore();
+  const { user } = useAuth();
 
   const { messages, setMessages, loading, reload, onSubmit, input, onChange } =
     useChat({

@@ -1,45 +1,46 @@
-import { initializeApp, getApps } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
-import { getStorage } from "firebase/storage";
-import { firebaseConfig } from "./firebaseConfig"; // Adjust the path as needed
+import { initializeApp, getApps, FirebaseApp } from "firebase/app";
+import { getAuth, Auth } from "firebase/auth";
+import { getFirestore, Firestore } from "firebase/firestore";
+import { getStorage, FirebaseStorage } from "firebase/storage";
+import { firebaseConfig } from "./firebaseConfig";
 
-export const firebaseApp =
-  getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
-export const auth = getAuth(firebaseApp);
-export const db = getFirestore(firebaseApp);
-export const storage = getStorage(firebaseApp);
+// Initialize Firebase only on client-side
+let firebaseApp: FirebaseApp | null = null;
+let auth: Auth | null = null;
+let db: Firestore | null = null;
+let storage: FirebaseStorage | null = null;
+
+if (typeof window !== "undefined") {
+  firebaseApp = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+  auth = getAuth(firebaseApp);
+  db = getFirestore(firebaseApp);
+  storage = getStorage(firebaseApp);
+}
+
+// Export with null checks
+export { firebaseApp, auth, db, storage };
 
 export async function getAuthenticatedAppForUser(session = null) {
   if (typeof window !== "undefined") {
-    return { app: firebaseApp, user: auth.currentUser?.toJSON() };
+    return { app: firebaseApp, user: auth?.currentUser?.toJSON() };
   }
 
   const noSessionReturn = { app: null, currentUser: null };
 
   if (!session) {
-
-    if (!session) return noSessionReturn;
+    return noSessionReturn;
   }
+
+  // Remove server-side Firebase initialization
+  return noSessionReturn;
 }
 
+// Remove these server-side functions or make them no-ops
 async function getAppRouterSession() {
-  // dynamically import to prevent import errors in pages router
-  const { cookies } = await import("next/headers");
-
-  try {
-    return cookies().get("__session")?.value;
-  } catch (error) {
-    // cookies() throws when called from pages router
-    return undefined;
-  }
+  return undefined;
 }
 
 function initializeAuthenticatedApp(uid: string) {
-  const random = Math.random().toString(36).split(".")[1];
-  const appName = `authenticated-context:${uid}:${random}`;
-
-  const app = initializeApp(firebaseConfig, appName);
-
-  return app;
+  // This won't work on Cloudflare Workers anyway
+  return null;
 }

@@ -3,14 +3,12 @@ import SignInEmail from "@/components/auth/SignInEmail";
 import Link from "next/link";
 import Button from "@/components/common/Button";
 
-import { useAuthStore } from "@/providers/authStoreProvider";
+import { useAuth } from "@/providers/authStoreProvider";
 import { useRouter } from "next/navigation";
 import { TfiNewWindow } from "react-icons/tfi";
 
 const SignInComponent = () => {
-  const { user, loginWithEmail, loginWithGoogle } = useAuthStore(
-    (state) => state
-  );
+  const { user, loginWithEmail, loginWithGoogle } = useAuth();
   const router = useRouter();
 
   useEffect(() => {

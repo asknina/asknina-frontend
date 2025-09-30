@@ -1,14 +1,10 @@
 "use client";
 import AskNinaButton from "@/components/common/Button";
-import { useAuthStore } from "@/providers/authStoreProvider";
+import { useAuth } from "@/providers/authStoreProvider";
 import React, { useEffect, useState } from "react";
-export const runtime = "edge";
-export const dynamic = "force-dynamic";
 
 const Profile = () => {
-  const { user, profile, getUserProfile, updateUserProfile } = useAuthStore(
-    (state) => state
-  );
+  const { user, profile, getUserProfile, updateUserProfile } = useAuth();
 
   const [username, setUsername] = useState<string>("");
   const [dateOfBirth, setDateOfBirth] = useState("");
@@ -18,7 +14,7 @@ const Profile = () => {
   const [showMessage, setShowMessage] = useState(false);
   useEffect(() => {
     if (user.uid) {
-      getUserProfile(user.uid);
+      getUserProfile();
     }
   }, [user]);
 

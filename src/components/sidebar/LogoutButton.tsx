@@ -3,14 +3,14 @@ import React from "react";
 import AskNinaButton, { Variants } from "../common/Button";
 import { LuLogOut } from "react-icons/lu";
 import { useRouter } from "next/navigation";
-import { useAuthStore } from "@/providers/authStoreProvider";
+import { useAuth } from "@/providers/authStoreProvider";
 
 const LogoutButton = ({
   setIsMenuOpen,
 }: {
   setIsMenuOpen?: (val: boolean) => void;
 }) => {
-  const { isLoggedIn, logout } = useAuthStore((state) => state);
+  const { isLoggedIn, logout } = useAuth();
   const router = useRouter();
 
   const handleLogin = () => {

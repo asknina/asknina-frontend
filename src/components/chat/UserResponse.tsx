@@ -1,4 +1,4 @@
-import { useAuthStore } from "@/providers/authStoreProvider";
+import { useAuth } from "@/providers/authStoreProvider";
 import React from "react";
 
 interface UserResponseProps {
@@ -6,7 +6,7 @@ interface UserResponseProps {
   index: number;
 }
 const UserResponse = ({ message }: UserResponseProps) => {
-  const { user, profile } = useAuthStore((state) => state);
+  const { user, profile } = useAuth();
   const initial = profile?.username
     ? profile.username[0]
     : user?.displayName

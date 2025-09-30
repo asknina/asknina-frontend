@@ -14,13 +14,10 @@
   "dependencies": {
     "@axflow/models": "^0.0.25",
     "@next/third-parties": "^14.2.4",
-    "@opennextjs/cloudflare": "^1.6.5",
     "@sentry/nextjs": "^8.7.0",
     "firebase": "^10.10.0",
-    "firebase-admin": "^12.0.0",
     "firebaseui": "^6.1.0",
-    "fs": "^0.0.1-security",
-    "http": "^0.0.1-security",
+    "jotai": "^2.15.0",
     "linkify-react": "^4.3.1",
     "next": "^14.2.30",
     "react": "^18",
@@ -35,10 +32,10 @@
     "react-spinners": "^0.13.8",
     "request": "^2.88.2",
     "use-onclickoutside": "^0.4.1",
-    "validator": "^13.12.0",
-    "zustand": "^4.5.2"
+    "validator": "^13.12.0"
   },
   "devDependencies": {
+    "@opennextjs/cloudflare": "^1.9.0",
     "@types/cheerio": "^0.22.35",
     "@types/node": "^20",
     "@types/react": "^18",
@@ -52,6 +49,6 @@
     "postcss": "^8",
     "tailwindcss": "^3.3.0",
     "typescript": "^5",
-    "wrangler": "^4.33.0"
+    "wrangler": "^4.40.2"
   }
 }

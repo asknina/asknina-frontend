@@ -13,10 +13,16 @@ interface User {
 }
 
 export async function getUser(userId: any) {
+    if (!db) {
+        throw new Error("Firestore not initialized");
+    }
     return (await getDoc(doc(db, `users/${userId}`))).data();
 }
 
 export default async function addUser(userObj: User) {
+    if (!db) {
+        throw new Error("Firestore not initialized");
+    }
     try {
         await setDoc(
             doc(db, "users", userObj.uid),
@@ -30,6 +36,9 @@ export default async function addUser(userObj: User) {
 }
 
 export const fetchUserData = async (userCredential: UserCredential): Promise<any> => {
+    if (!db) {
+        throw new Error("Firestore not initialized");
+    }
     const { user } = userCredential
     const userDocRef = doc(db, "users", user?.uid || "abc");
     const docSnap = await getDoc(userDocRef);
@@ -53,12 +62,18 @@ export const fetchUserData = async (userCredential: UserCredential): Promise<any
 };
 
 export const getUserProfile = async (userId: string): Promise<any> => {
+    if (!db) {
+        throw new Error("Firestore not initialized");
+    }
     const userDocRef = doc(db, "users", userId);
     const docSnap = await getDoc(userDocRef);
     return docSnap.data()
 }
 
 export const updateUserProfile = async (userId: string, userInfo: Partial<User>): Promise<any> => {
+    if (!db) {
+        throw new Error("Firestore not initialized");
+    }
     return await updateDoc(doc(db, "users", userId), { ...userInfo, updated: serverTimestamp() }).then(async () => {
         return await getUserProfile(userId)
     });

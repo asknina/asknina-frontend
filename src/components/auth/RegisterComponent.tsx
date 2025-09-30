@@ -1,11 +1,11 @@
 "use client";
-import { useAuthStore } from "@/providers/authStoreProvider";
+import { useAuth } from "@/providers/authStoreProvider";
 import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import SignUpEmail from "./SignUpEmail";
 
 const RegisterComponent = () => {
-  const { user } = useAuthStore((state) => state);
+  const { user } = useAuth();
   const router = useRouter();
   // useEffect(() => {
   //   if (user) {

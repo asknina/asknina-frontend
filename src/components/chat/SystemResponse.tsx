@@ -27,7 +27,7 @@ interface SystemResponseProps {
   isResponded: boolean;
 }
 const SystemResponse = ({ message, isLoading }: SystemResponseProps) => {
-  const { respondToMessage } = useConversationStore((state) => state);
+  const { respondToMessage } = useConversationStore();
   const [response, setResponse] = useState(message.response);
   const [showModal, setShowModal] = useState(false);
   const [pendingUrl, setPendingUrl] = useState("");
@@ -40,9 +40,9 @@ const SystemResponse = ({ message, isLoading }: SystemResponseProps) => {
   };
 
   const handleModalConfirm = () => {
-    if (pendingUrl && pendingUrl !== undefined) {
-      window.open(pendingUrl, "_blank", "noopener,noreferrer");
-    }
+    // if (pendingUrl && pendingUrl !== undefined) {
+    //   window.open(pendingUrl, "_blank", "noopener,noreferrer");
+    // }
     setShowModal(false);
     setPendingUrl("");
   };

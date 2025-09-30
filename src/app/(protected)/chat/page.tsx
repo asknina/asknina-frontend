@@ -1,7 +1,10 @@
-import Chat from "@/components/chat/Chat";
-import React from "react";
-export const runtime = "edge";
-export const dynamic = "force-dynamic";
+"use client";
+
+import dynamic from "next/dynamic";
+
+const Chat = dynamic(() => import("@/components/chat/Chat"), {
+  ssr: false,
+});
 
 const ChatWindow = () => {
   return <Chat />;

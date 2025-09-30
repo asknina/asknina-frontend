@@ -1,39 +1,23 @@
 "use client";
 
-import { type ReactNode, createContext, useRef, useContext } from "react";
-import { useStore } from "zustand";
+import { useAtom } from "jotai";
+import {
+  initialQuestionAtom,
+  systemMessageAtom,
+  messagesAtom,
+  InitialQuestionState,
+} from "@/stores/chatStore";
 
-import { type ChatStore, createChatStore } from "@/stores/chatStore";
+export function useChatStore() {
+  const [initialQuestion, setInitialQuestion] = useAtom(initialQuestionAtom);
+  const [systemMessage] = useAtom(systemMessageAtom);
+  const [messages, setMessages] = useAtom(messagesAtom);
 
-export type ChatStoreApi = ReturnType<typeof createChatStore>;
-
-export const ChatStoreContext = createContext<ChatStoreApi | undefined>(
-  undefined
-);
-
-export interface ChatStoreProviderProps {
-  children: ReactNode;
+  return {
+    initialQuestion,
+    systemMessage,
+    messages,
+    setInitialQuestion,
+    setMessages,
+  };
 }
-
-export const ChatStoreProvider = ({ children }: ChatStoreProviderProps) => {
-  const storeRef = useRef<ChatStoreApi>();
-  if (!storeRef.current) {
-    storeRef.current = createChatStore();
-  }
-
-  return (
-    <ChatStoreContext.Provider value={storeRef.current}>
-      {children}
-    </ChatStoreContext.Provider>
-  );
-};
-
-export const useChatStore = <T,>(selector: (store: ChatStore) => T): T => {
-  const chatStoreContext = useContext(ChatStoreContext);
-
-  if (!chatStoreContext) {
-    throw new Error(`useChatStore must be used within chatStoreProvider`);
-  }
-
-  return useStore(chatStoreContext, selector);
-};

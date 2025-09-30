@@ -1,70 +1,87 @@
 "use client";
 
-import {
-  type ReactNode,
-  createContext,
-  useRef,
-  useContext,
-  useEffect,
-} from "react";
-import { useStore } from "zustand";
-
-import {
-  type AuthStore,
-  createAuthStore,
-  defaultInitState,
-} from "@/stores/authStore";
+import { useEffect } from "react";
+import { useAtom, useSetAtom } from "jotai";
 import { onAuthStateChanged } from "@/lib/firebase/auth";
-import { useRouter } from "next/navigation";
-import { getUserProfile } from "@/lib/firebase/data/users";
+import {
+  userAtom,
+  isLoggedInAtom,
+  isLoadingAuthAtom,
+  loginErrorAtom,
+  profileAtom,
+  loginWithEmailAtom,
+  loginWithGoogleAtom,
+  createUserAtom,
+  logoutAtom,
+  getUserProfileAtom,
+  updateUserProfileAtom,
+  defaultUser,
+  defaultProfile,
+} from "@/stores/authStore";
 
-export type AuthStoreApi = ReturnType<typeof createAuthStore>;
-
-export const AuthStoreContext = createContext<AuthStoreApi | undefined>(
-  undefined
-);
-
-export interface AuthStoreProviderProps {
-  children: ReactNode;
-}
-
-export const AuthStoreProvider = ({
-  children,
-}: AuthStoreProviderProps): JSX.Element => {
-  const storeRef = useRef<AuthStoreApi>();
-
-  if (!storeRef.current) {
-    storeRef.current = createAuthStore();
-  }
-
-  return (
-    <AuthStoreContext.Provider value={storeRef.current}>
-      {children}
-    </AuthStoreContext.Provider>
-  );
-};
-
-export const useAuthStore = <T,>(selector: (store: AuthStore) => T): T => {
-  const authStoreContext = useContext(AuthStoreContext);
-  const router = useRouter();
+export function useAuthInit() {
+  const [, setUser] = useAtom(userAtom);
+  const [, setIsLoggedIn] = useAtom(isLoggedInAtom);
+  const [, setIsLoadingAuth] = useAtom(isLoadingAuthAtom);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged((authUser: any) => {
-      authStoreContext?.setState({ isLoadingAuth: true });
-      if (authUser && authUser?.email) {
-        authStoreContext?.setState({ user: authUser, isLoggedIn: true });
+    if (typeof window === "undefined") return;
+
+    setIsLoadingAuth(true);
+
+    const unsubscribe = onAuthStateChanged(async (authUser: any) => {
+      if (authUser && authUser.email) {
+        const token = await authUser.getIdToken();
+        setUser({
+          email: authUser.email || "",
+          displayName: authUser.displayName || "",
+          uid: authUser.uid,
+          accessToken: token || "",
+        });
+        setIsLoggedIn(true);
       } else {
-        authStoreContext?.setState(defaultInitState);
+        setUser(defaultUser);
+        setIsLoggedIn(false);
       }
-      authStoreContext?.setState({ isLoadingAuth: false });
+      setIsLoadingAuth(false);
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [setUser, setIsLoggedIn, setIsLoadingAuth]);
+}
 
-  if (!authStoreContext) {
-    throw new Error(`useAuthStore must be used within AuthStoreProvider`);
-  }
+export function useAuth() {
+  const [user] = useAtom(userAtom);
+  const [isLoggedIn] = useAtom(isLoggedInAtom);
+  const [isLoadingAuth] = useAtom(isLoadingAuthAtom);
+  const [loginError] = useAtom(loginErrorAtom);
+  const [profile] = useAtom(profileAtom);
 
-  return useStore(authStoreContext, selector);
-};
+  const loginWithEmail = useSetAtom(loginWithEmailAtom);
+  const loginWithGoogle = useSetAtom(loginWithGoogleAtom);
+  const createUserAction = useSetAtom(createUserAtom);
+  const logout = useSetAtom(logoutAtom);
+  const getUserProfile = useSetAtom(getUserProfileAtom);
+  const updateUserProfile = useSetAtom(updateUserProfileAtom);
+
+  return {
+    user,
+    isLoggedIn,
+    isLoadingAuth,
+    loginError,
+    profile,
+    loginWithEmail: (email: string, password: string) =>
+      loginWithEmail({ email, password }),
+    loginWithGoogle: () => loginWithGoogle(),
+    createUser: (
+      email: string,
+      password: string,
+      username: string,
+      dateOfBirth: string,
+      pronouns: string
+    ) => createUserAction({ email, password, username, dateOfBirth, pronouns }),
+    logout: () => logout(),
+    getUserProfile: () => getUserProfile(),
+    updateUserProfile: (userInfo: any) => updateUserProfile(userInfo),
+  };
+}

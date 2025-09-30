@@ -3,7 +3,7 @@ import React from "react";
 import { useRouter } from "next/navigation";
 
 import { useChatStore } from "@/providers/chatStoreProvider";
-import { useAuthStore } from "@/providers/authStoreProvider";
+import { useAuth } from "@/providers/authStoreProvider";
 import { useConversationStore } from "@/providers/conversationStoreProvider";
 
 import QuestionPill from "./QuestionPill";
@@ -61,12 +61,10 @@ const connectQuestions = [
 ];
 const MainExplore = ({}: MainExploreProps) => {
   const router = useRouter();
-  const { user } = useAuthStore((state) => state);
-  const { initialQuestion, setInitialQuestion } = useChatStore(
-    (state) => state
-  );
+  const { user } = useAuth();
+  const { initialQuestion, setInitialQuestion } = useChatStore();
   const { createConversation, conversations, setCurrentConversation } =
-    useConversationStore((state) => state);
+    useConversationStore();
 
   const handleEnter = async (e: any) => {
     e.preventDefault();

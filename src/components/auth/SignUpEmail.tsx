@@ -5,8 +5,8 @@ import DropdownComp from "../common/Dropdown";
 import { Option } from "react-dropdown";
 import validator from "validator";
 import Link from "next/link";
-import { useAuthStore } from "@/providers/authStoreProvider";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/providers/authStoreProvider";
 
 interface SignUpEmailProps {}
 
@@ -40,7 +40,7 @@ const SignUpEmail = ({}: SignUpEmailProps) => {
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [showBoxErrorMessage, setShowBoxErrorMessage] = useState(false);
 
-  const { createUser } = useAuthStore((state) => state);
+  const { createUser } = useAuth();
   const router = useRouter();
 
   useEffect(() => {

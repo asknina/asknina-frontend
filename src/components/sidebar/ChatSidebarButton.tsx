@@ -23,9 +23,7 @@ const ChatSidebarButton = ({
 }: ChatSidebarButtonProps) => {
   const ref = useRef(null);
 
-  const { currentConversation, updateConversation } = useConversationStore(
-    (state) => state
-  );
+  const { currentConversation, updateConversation } = useConversationStore();
   const isCurrent =
     (currentConversation && currentConversation?.conversationId) ==
     conversation.conversationId;

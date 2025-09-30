@@ -3,14 +3,14 @@ import React, { useEffect, useState } from "react";
 import Button from "@/components/common/Button";
 import validator from "validator";
 import { sendResetPasswordEmail } from "@/lib/firebase/auth";
-import { useAuthStore } from "@/providers/authStoreProvider";
+import { useAuth } from "@/providers/authStoreProvider";
 
 interface SignInEmailProps {
   handleSignIn: Function;
 }
 
 const SignInEmail = ({ handleSignIn }: SignInEmailProps) => {
-  const { loginError } = useAuthStore((state) => state);
+  const { loginError } = useAuth();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 

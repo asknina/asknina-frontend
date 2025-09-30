@@ -9,7 +9,7 @@ import { IoMdAdd, IoIosHome } from "react-icons/io";
 import { useRouter } from "next/navigation";
 import { DialogProps, Conversation, SystemRoles } from "@/types/chat";
 import { getAllUserConversations } from "@/lib/firebase/data/chats";
-import { useAuthStore } from "@/providers/authStoreProvider";
+import { useAuth } from "@/providers/authStoreProvider";
 import { useConversationStore } from "@/providers/conversationStoreProvider";
 import ProfileButton from "../sidebar/ProfileButton";
 import { getRandomInteger } from "@/lib/util/utilities";
@@ -17,7 +17,7 @@ import { descriptor, systemPrompts } from "@/lib/util/constants";
 import { createMessage } from "@axflow/models/shared";
 
 const Sidebar = ({}) => {
-  const { isLoggedIn, user } = useAuthStore((state) => state);
+  const { isLoggedIn, user } = useAuth();
   const {
     conversations,
     setConversations,
@@ -25,7 +25,7 @@ const Sidebar = ({}) => {
     createConversation,
     deleteConversation,
     currentConversation,
-  } = useConversationStore((state) => state);
+  } = useConversationStore();
   const router = useRouter();
   const convosEndRef = useRef<null | HTMLDivElement>(null);
 

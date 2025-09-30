@@ -1,38 +1,28 @@
-import { createStore } from 'zustand/vanilla'
+import { atom } from 'jotai';
 
 export type InitialQuestionState = {
     promptNumber: number,
     question: string
 }
+
 export type ChatState = {
     initialQuestion: InitialQuestionState
     systemMessage: number
     messages: any[]
 }
 
-export type ChatActions = {
-    setInitialQuestion: (question: InitialQuestionState) => void
-    setMessages: (messages: any[]) => void
-}
+export const defaultInitialQuestion: InitialQuestionState = {
+    promptNumber: 0,
+    question: "",
+};
 
-export type ChatStore = ChatState & ChatActions
-
-export const defaultInitState: ChatState = {
-    initialQuestion: {
-        promptNumber: 0,
-        question: "",
-    },
+export const defaultChatState: ChatState = {
+    initialQuestion: defaultInitialQuestion,
     systemMessage: 0,
     messages: []
-}
+};
 
-export const createChatStore = (
-    initState: ChatState = defaultInitState,
-) => {
-    return createStore<ChatStore>()((set) => ({
-        ...initState,
-        setInitialQuestion: (question: InitialQuestionState) => set(() => ({ initialQuestion: question })),
-        setMessages: (messages) => set(() => ({ messages: messages })),
-
-    }))
-}
+// Base atoms
+export const initialQuestionAtom = atom<InitialQuestionState>(defaultInitialQuestion);
+export const systemMessageAtom = atom<number>(0);
+export const messagesAtom = atom<any[]>([]);

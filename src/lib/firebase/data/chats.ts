@@ -20,6 +20,9 @@ import { MessageType } from "@axflow/models/shared";
 // messages --> {uid: "something", ...other fields, systemPrompt: "string"}
 
 export async function getConversation(conversationId: string): Promise<Conversation> {
+    if (!db) {
+        throw new Error("Firestore not initialized");
+    }
     const convoData = (await getDoc(doc(db, "conversations", conversationId))).data();
     return { ...convoData, conversationId: conversationId } as Conversation
 }
@@ -28,6 +31,9 @@ export async function getConversation(conversationId: string): Promise<Conversat
 export async function getAllUserConversations(
     userId: string
 ): Promise<Conversation[]> {
+    if (!db) {
+        throw new Error("Firestore not initialized");
+    }
     const user = await getUser(userId);
     return await Promise.all(
         user?.conversations?.map(async (conversationId: string) => {
@@ -39,6 +45,9 @@ export async function getAllUserConversations(
 export async function getConversationMessages(
     conversationId: string
 ): Promise<any[]> {
+    if (!db) {
+        throw new Error("Firestore not initialized");
+    }
     // Fetch the conversation
     const convo = await getConversation(conversationId);
 
@@ -76,6 +85,9 @@ export async function getConversationMessages(
 export async function getMessage(
     messageId: string
 ): Promise<any> {
+    if (!db) {
+        throw new Error("Firestore not initialized");
+    }
     const snapshot = await getDoc(doc(db, "messages", messageId))
     return snapshot.data()
 }
@@ -88,6 +100,9 @@ export async function createNewConversation(
     messages: any[],
     promptQuestion?: string
 ): Promise<any> {
+    if (!db) {
+        throw new Error("Firestore not initialized");
+    }
     const partialConvo: Partial<Conversation> = { title, messages: [], created: serverTimestamp() }
     if (promptQuestion) {
         partialConvo.promptQuestion = promptQuestion
@@ -127,6 +142,9 @@ export async function deleteConversation(
     userId: string,
     conversationId: string
 ): Promise<any> {
+    if (!db) {
+        throw new Error("Firestore not initialized");
+    }
     //    deleteDocument
     await deleteDoc(doc(db, "conversations", conversationId))
     // delete from user list
@@ -143,6 +161,9 @@ export async function updateConversationMessage(
     message: any,
     index?: number
 ) {
+    if (!db) {
+        throw new Error("Firestore not initialized");
+    }
     return await addMessageToConversation(conversationId, message, index)
 }
 
@@ -150,11 +171,17 @@ export async function saveConversationDetails(
     conversationId: string,
     conversation: Partial<Conversation>
 ) {
+    if (!db) {
+        throw new Error("Firestore not initialized");
+    }
     return await updateDoc(doc(db, "conversations", conversationId), { ...conversation, updated: serverTimestamp() })
 }
 
 // add chat
 export async function addMessageToConversation(conversationId: string, message: MessageType & AdditionalMessageDetails, convoIndex?: number) {
+    if (!db) {
+        throw new Error("Firestore not initialized");
+    }
     if (message?.id) {
         const messageDoc = await setDoc(doc(db, "messages", message.id), { ...message, created: serverTimestamp() });
 
@@ -187,6 +214,9 @@ export async function respondToChat(
     messageId: string,
     response: boolean
 ) {
+    if (!db) {
+        throw new Error("Firestore not initialized");
+    }
     return await updateDoc(doc(db, "messages", messageId), {
         response:
             { liked: response, timeResponded: serverTimestamp() },

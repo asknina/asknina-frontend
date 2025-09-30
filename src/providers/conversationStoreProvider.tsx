@@ -1,48 +1,59 @@
 "use client";
 
-import { type ReactNode, createContext, useRef, useContext } from "react";
-import { useStore } from "zustand";
-
+import { useAtom, useSetAtom } from "jotai";
 import {
-  type ConversationStore,
-  createConversationStore,
+  conversationsAtom,
+  currentConversationAtom,
+  currentConvoMessagesAtom,
+  setCurrentConversationAtom,
+  createConversationAtom,
+  deleteConversationAtom,
+  respondToMessageAtom,
+  updateConversationAtom,
+  updateConversationMessageAtom,
 } from "@/stores/conversationStore";
+import { Conversation, MessageObj } from "@/types/chat";
+import { MessageType } from "@axflow/models/shared";
 
-export type ConversationStoreApi = ReturnType<typeof createConversationStore>;
-
-export const ConversationStoreContext = createContext<
-  ConversationStoreApi | undefined
->(undefined);
-
-export interface ConversationStoreProviderProps {
-  children: ReactNode;
-}
-
-export const ConversationStoreProvider = ({
-  children,
-}: ConversationStoreProviderProps) => {
-  const storeRef = useRef<ConversationStoreApi>();
-  if (!storeRef.current) {
-    storeRef.current = createConversationStore();
-  }
-
-  return (
-    <ConversationStoreContext.Provider value={storeRef.current}>
-      {children}
-    </ConversationStoreContext.Provider>
+export function useConversationStore() {
+  const [conversations, setConversations] = useAtom(conversationsAtom);
+  const [currentConversation] = useAtom(currentConversationAtom);
+  const [currentConvoMessages, setCurrentConversationMessages] = useAtom(
+    currentConvoMessagesAtom
   );
-};
 
-export const useConversationStore = <T,>(
-  selector: (store: ConversationStore) => T
-): T => {
-  const conversationStoreContext = useContext(ConversationStoreContext);
+  const setCurrentConversation = useSetAtom(setCurrentConversationAtom);
+  const createConversation = useSetAtom(createConversationAtom);
+  const deleteConversation = useSetAtom(deleteConversationAtom);
+  const respondToMessage = useSetAtom(respondToMessageAtom);
+  const updateConversation = useSetAtom(updateConversationAtom);
+  const updateConversationMessage = useSetAtom(updateConversationMessageAtom);
 
-  if (!conversationStoreContext) {
-    throw new Error(
-      `useConversationStore must be used within conversationStoreProvider`
-    );
-  }
-
-  return useStore(conversationStoreContext, selector);
-};
+  return {
+    conversations,
+    currentConversation,
+    currentConvoMessages,
+    setConversations,
+    setCurrentConversation: (conversationId: string) =>
+      setCurrentConversation(conversationId),
+    setCurrentConversationMessages,
+    createConversation: (
+      userId: string,
+      messages: any[],
+      promptQuestion?: string
+    ) => createConversation({ userId, messages, promptQuestion }),
+    deleteConversation: (userId: string, conversationId: string) =>
+      deleteConversation({ userId, conversationId }),
+    respondToMessage: (messageId: string, response: boolean) =>
+      respondToMessage({ messageId, response }),
+    updateConversation: (
+      conversationId: string,
+      convoDetails: Partial<Conversation>
+    ) => updateConversation({ conversationId, convoDetails }),
+    updateConversationMessage: (
+      conversationId: string,
+      message: MessageType,
+      index?: number
+    ) => updateConversationMessage({ conversationId, message, index }),
+  };
+}

@@ -1,96 +1,110 @@
-import { createStore } from 'zustand/vanilla'
+import { atom } from 'jotai';
 import { Conversation, MessageObj } from "@/types/chat";
 import { createTitle } from '@/lib/util/utilities';
-import { createNewConversation, deleteConversation, getConversation, getConversationMessages, respondToChat, saveConversationDetails, updateConversationMessage } from '@/lib/firebase/data/chats';
+import {
+    createNewConversation,
+    deleteConversation as deleteConvoFromDB,
+    getConversation,
+    getConversationMessages,
+    respondToChat,
+    saveConversationDetails,
+    updateConversationMessage as updateConvoMessageInDB
+} from '@/lib/firebase/data/chats';
 import { MessageType } from '@axflow/models/shared';
 
-export type ConversationState = {
-    conversations: Conversation[]
-    currentConversation: Conversation
-    currentConvoMessages: MessageObj[]
-}
+export const defaultConversation: Conversation = {
+    title: "",
+    conversationId: "",
+    messages: [],
+    promptQuestion: ""
+};
 
+// Base atoms
+export const conversationsAtom = atom<Conversation[]>([]);
+export const currentConversationAtom = atom<Conversation>(defaultConversation);
+export const currentConvoMessagesAtom = atom<MessageObj[]>([]);
 
-export type ConversationActions = {
-    createConversation: (userId: string, messages: any[], promptQuestion?: string) => Promise<void>
-    setConversations: (conversations: Conversation[]) => void
-    setCurrentConversation: (conversationId: string) => Promise<void>
-    setCurrentConversationMessages: (messages: MessageObj[]) => void
-    respondToMessage: (messageId: string, response: boolean) => Promise<void>
-    updateConversation: (conversationId: string, conversationDetails: Partial<Conversation>) => void
-    updateConversationMessage: (conversationId: string, message: MessageType, index?: number) => void
-    deleteConversation: (userId: string, conversationId: string) => void
-}
-
-export type ConversationStore = ConversationState & ConversationActions
-
-export const defaultInitState: ConversationState = {
-    conversations: [],
-    currentConversation: { title: "", conversationId: "", messages: [], promptQuestion: "" },
-    currentConvoMessages: []
-}
-
-export const createConversationStore = (
-    initState: ConversationState = defaultInitState,
-) => {
-    return createStore<ConversationStore>()((set, get) => ({
-        ...initState,
-        setConversations: (conversations) => set(() => ({ conversations })),
-        setCurrentConversation: async (conversationId) => {
-            if (conversationId) {
-                const conversation = await getConversation(conversationId)
-                const convoMessages = await getConversationMessages(conversationId)
-                set(() => ({
-                    currentConversation: conversation,
-                    currentConvoMessages: convoMessages
-                }))
-            } else {
-                set(() => ({
-                    currentConversation: defaultInitState.currentConversation,
-                    currentConvoMessages: []
-                }))
-            }
-        },
-        setCurrentConversationMessages: (messages: MessageObj[]) => {
-            set(() => ({
-                currentConvoMessages: messages
-            }))
-        },
-        createConversation: async (userId, messages, promptQuestion = "") => {
-            const title = promptQuestion || createTitle()
-            const convoId = await createNewConversation(userId, title, messages, promptQuestion);
-            const convo = await getConversation(convoId);
-            set((state) => ({
-                conversations: [...state.conversations, convo],
-                currentConversation: convo
-            }));
-            await get().setCurrentConversation(convo.conversationId);
-        },
-        deleteConversation: async (userId: string, conversationId: string) => {
-            await deleteConversation(userId, conversationId)
-            const newConvos = get().conversations.filter(convo => convo.conversationId !== conversationId)
-            set({ conversations: newConvos });
-        },
-        respondToMessage: async (messageId: string, response: boolean) => {
-            await respondToChat(messageId, response)
-        },
-        updateConversation: async (conversationId: string, convoDetails: Partial<Conversation>) => {
-            await saveConversationDetails(conversationId, convoDetails)
-            set((state) => {
-                const updatedConversations = state.conversations.map(convo =>
-                    convo.conversationId === conversationId ? { ...convo, ...convoDetails } : convo
-                );
-                return { conversations: updatedConversations };
-            });
-            if (get().currentConversation.conversationId === conversationId) {
-                set((state) => ({
-                    currentConversation: { ...state.currentConversation, ...convoDetails }
-                }));
-            }
+// Action atoms
+export const setCurrentConversationAtom = atom(
+    null,
+    async (get, set, conversationId: string) => {
+        if (conversationId) {
+            const conversation = await getConversation(conversationId);
+            const convoMessages = await getConversationMessages(conversationId);
+            set(currentConversationAtom, conversation);
+            set(currentConvoMessagesAtom, convoMessages);
+        } else {
+            set(currentConversationAtom, defaultConversation);
+            set(currentConvoMessagesAtom, []);
         }
-        ,
-        updateConversationMessage: async (conversationId: string, message: MessageType, index?: number) => {
-            await updateConversationMessage(conversationId, message, index);
+    }
+);
+
+export const createConversationAtom = atom(
+    null,
+    async (get, set, { userId, messages, promptQuestion = "" }: {
+        userId: string;
+        messages: any[];
+        promptQuestion?: string
+    }) => {
+        const title = promptQuestion || createTitle();
+        const convoId = await createNewConversation(userId, title, messages, promptQuestion);
+        const convo = await getConversation(convoId);
+
+        const currentConvos = get(conversationsAtom);
+        set(conversationsAtom, [...currentConvos, convo]);
+        set(currentConversationAtom, convo);
+
+        // Trigger setCurrentConversation
+        await set(setCurrentConversationAtom, convo.conversationId);
+    }
+);
+
+export const deleteConversationAtom = atom(
+    null,
+    async (get, set, { userId, conversationId }: { userId: string; conversationId: string }) => {
+        await deleteConvoFromDB(userId, conversationId);
+        const currentConvos = get(conversationsAtom);
+        const newConvos = currentConvos.filter(convo => convo.conversationId !== conversationId);
+        set(conversationsAtom, newConvos);
+    }
+);
+
+export const respondToMessageAtom = atom(
+    null,
+    async (get, set, { messageId, response }: { messageId: string; response: boolean }) => {
+        await respondToChat(messageId, response);
+    }
+);
+
+export const updateConversationAtom = atom(
+    null,
+    async (get, set, { conversationId, convoDetails }: {
+        conversationId: string;
+        convoDetails: Partial<Conversation>
+    }) => {
+        await saveConversationDetails(conversationId, convoDetails);
+
+        const currentConvos = get(conversationsAtom);
+        const updatedConversations = currentConvos.map(convo =>
+            convo.conversationId === conversationId ? { ...convo, ...convoDetails } : convo
+        );
+        set(conversationsAtom, updatedConversations);
+
+        const currentConvo = get(currentConversationAtom);
+        if (currentConvo.conversationId === conversationId) {
+            set(currentConversationAtom, { ...currentConvo, ...convoDetails });
         }
-    }))
-}
+    }
+);
+
+export const updateConversationMessageAtom = atom(
+    null,
+    async (get, set, { conversationId, message, index }: {
+        conversationId: string;
+        message: MessageType;
+        index?: number
+    }) => {
+        await updateConvoMessageInDB(conversationId, message, index);
+    }
+);

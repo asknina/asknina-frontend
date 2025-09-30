@@ -2,20 +2,29 @@ const { withSentryConfig } = require("@sentry/nextjs");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: "export",
   experimental: {
     optimizePackageImports: ["lucide-react"],
   },
   images: {
     unoptimized: true,
   },
-  webpack: (config) => {
+  webpack: (config, { isServer }) => {
     config.module.rules.push({
       test: /\.(mp4|webm|ogg|swf|avi|flv|mov)$/,
       use: {
         loader: "ignore-loader",
       },
     });
+
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+      };
+    }
+
     return config;
   },
 };
