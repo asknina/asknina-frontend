@@ -23,7 +23,7 @@ const localPort = "8000";
 const baseUrl =
   process.env.NODE_ENV !== "production"
     ? `http://localhost:${localPort}`
-    : `https://${process.env.BACKEND_API}`;
+    : "https://api.asknina.ai";
 
 const Chat = () => {
   const [cleanedMessages, setCleanedMessages] = useState<MessageType[]>([]);
